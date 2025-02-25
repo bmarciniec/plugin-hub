@@ -5,7 +5,7 @@
         "description": "Tool for placing fixtures made with VisualScripting in a more efficient way",
         "github": {
             "owner": "bmarciniec",
-            "repo": "pythonpart-sdk"
+            "repo": "fixture-placement"
         }
     }
 ]
