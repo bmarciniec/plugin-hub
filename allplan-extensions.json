@@ -1,0 +1,11 @@
+[
+    {
+        "uuid": "f86d7b11-096b-4f0c-8702-5bce3a45b88a",
+        "name": "Fixture placement",
+        "description": "Tool for placing fixtures made with VisualScripting in a more efficient way",
+        "github": {
+            "owner": "bmarciniec",
+            "repo": "pythonpart-sdk"
+        }
+    }
+]
