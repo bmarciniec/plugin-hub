@@ -8,5 +8,15 @@
             "owner": "bmarciniec",
             "repo": "fixture-placement"
         }
+    },
+    {
+        "uuid": "7612a6aa-0e83-4b62-a548-d18a3c30e7d7",
+        "name": "Batch IFC & DWG Export",
+        "developer": "Allplan GmbH",
+        "description": "The plugin allows you to automatically export multiple IFC and DWG files.",
+        "github": {
+            "owner": "xinling-xu",
+            "repo": "batch-ifc-dwg-export"
+        }
     }
 ]
