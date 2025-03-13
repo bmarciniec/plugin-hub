@@ -18,5 +18,15 @@
             "owner": "xinling-xu",
             "repo": "batch-ifc-dwg-export"
         }
+    },
+    {
+        "uuid": "fc33264f-5895-431e-a160-b0ff211f6fdf",
+        "name": "Transfer formwork to Rebar Attributes",
+        "developer": "Allplan GmbH",
+        "description": "This plugin transfers attributes from 3D volumes upon rebar using a containment algoritm",
+        "github": {
+            "owner": "bertvo-allplan",
+            "repo": "AllplanFormworkAttributeTransfer"
+        }
     }
 ]
