@@ -4,12 +4,14 @@ import webbrowser
 
 from collections.abc import Generator
 from contextlib import contextmanager
+from uuid import UUID
 
 import NemAll_Python_Utility as AllplanUtil
 
 from BaseScriptObject import BaseScriptObject, BaseScriptObjectData
 from BuildingElement import BuildingElement
 from CreateElementResult import CreateElementResult
+from ScriptObjectInteractors.OnCancelFunctionResult import OnCancelFunctionResult
 
 from .plugins import PluginsCollection, PluginStatus
 
@@ -57,7 +59,10 @@ class PluginHubScript(BaseScriptObject):
         plugin_index = event_id >> 16
         action_id  = event_id - (plugin_index << 16)
 
-        plugin = self.plugins[plugin_index]
+        if plugin_index == 0:   # when button was clicked on the detail page
+            plugin = self.plugins[UUID(self.build_ele.PluginUUID.value)]
+        else:                   # when button was clicked on the overview page
+            plugin = self.plugins[plugin_index]
 
         match action_id:
             case self.build_ele.INSTALL:
@@ -69,9 +74,13 @@ class PluginHubScript(BaseScriptObject):
 
                 return True
 
-            case self.build_ele.GET_MORE_INFO:
-                webbrowser.open(f"https://github.com/{plugin.github["owner"]}/{plugin.github["repo"]}")
+            case self.build_ele.SHOW_DETAILS:
+                plugin.fill_palette(self.build_ele)
+                self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_DETAILS
                 return True
+
+            case self.build_ele.GO_TO_HOMEPAGE:
+                webbrowser.open(plugin.developer.homepage)
 
             case self.build_ele.CHECK_FOR_UPDATES:
 
@@ -93,6 +102,10 @@ class PluginHubScript(BaseScriptObject):
 
                 self.plugins.update_building_element(self.build_ele, only_status=True)
                 return True
+
+            case self.build_ele.EMAIL_TO_SUPPORT:
+                webbrowser.open(f"mailto:{plugin.developer.support.email}")
+                return False
 
             case self.build_ele.UPDATE:
                 msg = f"You are about to update {plugin.name} from {plugin.installed_version} to {plugin.latest_version}.\nWould you like to Proceed?"
@@ -122,6 +135,18 @@ class PluginHubScript(BaseScriptObject):
                 return True
 
         return False
+
+    def on_cancel_function(self) -> OnCancelFunctionResult:
+        """Handle the event of hitting the close button or escape key
+
+        Returns:
+            OnCancelFunctionResult: what should happen after the cancel event
+        """
+        if self.build_ele.CurrentPaletteState.value == self.build_ele.SHOW_DETAILS:
+            self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_OVERVIEW
+            return OnCancelFunctionResult.CONTINUE_INPUT
+
+        return OnCancelFunctionResult.CANCEL_INPUT
 
 @contextmanager
 def notify_user(success_msg: str|None, error_msg: str) -> Generator:

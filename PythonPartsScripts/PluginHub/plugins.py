@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import warnings
 
+from calendar import c
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntEnum, StrEnum
@@ -25,6 +26,7 @@ from .allep import AllepPackage
 from .developers import Developer, DeveloperIndex
 from .installer import AllepInstaller
 from .site_libraries.version import Version
+from .util import date_to_str
 
 
 class PluginsCollection:
@@ -48,20 +50,18 @@ class PluginsCollection:
         self.developers = DeveloperIndex()
         self.developers.get_developers_from_github(self.branch)
 
-    def append(self, plugin: Plugin):
-        """Append a plugin to the collection.
+    def append(self, new_plugin: Plugin):
+        """Append a new plugin to the collection.
 
-        If the plugin is already in the collection, only its falsie attributes are updated.
+        If the plugin is already in the collection, the new plugin is fetched into the existing one.
 
         Args:
-            plugin (Plugin): Plugin to append.
+            new_plugin (Plugin): Plugin to append.
         """
-        if plugin.uuid in self._plugins:
-            for attr in plugin.__dataclass_fields__:
-                if getattr(plugin, attr):
-                    setattr(self._plugins[plugin.uuid], attr, getattr(plugin, attr))
+        if new_plugin.uuid in self._plugins:
+            self._plugins[new_plugin.uuid].fetch(new_plugin)
         else:
-            self._plugins[plugin.uuid] = plugin
+            self._plugins[new_plugin.uuid] = new_plugin
 
         self._sort_plugins()
 
@@ -281,6 +281,51 @@ class Plugin:
 
         self.installed_version = self.latest_version
         self.installed_date    = datetime.now()
+
+    def fetch(self, another_plugin: Plugin):
+        """Fetch the attributes of another plugin.
+
+        Args:
+            another_plugin (Plugin): Plugin to fetch the attributes from.
+        """
+        fields_to_update = self.__dataclass_fields__.keys()
+
+        for fld in fields_to_update:
+            # if this plugin is registered on github, some data should remain unchanged
+            if fld == "developer" and self.has_github:
+                continue
+
+            # otherwise, update all fields
+            if getattr(another_plugin, fld):
+                setattr(self, fld, getattr(another_plugin, fld))
+
+    def fill_palette(self, build_ele: BuildingElement):
+        """Fill the palette with the plugin information.
+
+        Args:
+            build_ele: Building element to populate.
+        """
+        _, global_str_table = build_ele.get_string_tables()
+        location_texts = {
+            "std": global_str_table.get_string("e_OFFICE", "Office"),
+            "usr": global_str_table.get_string("e_PRIVAT", "Private"),
+            "etc": global_str_table.get_string("e_STANDARD", "Standard"),
+        }
+
+        build_ele.PluginUUID.value        = str(self.uuid)
+        build_ele.PluginName.value        = self.name
+        build_ele.InstallDate.value       = date_to_str(self.installed_date) if self.installed_date else " "
+        build_ele.InstalledVersion.value  = str(self.installed_version) if self.installed_version else " "
+        build_ele.InstallLocation.value   = location_texts[self.location] if self.location else " "
+
+        if isinstance(self.developer, str):
+            build_ele.DeveloperName.value          = self.developer
+            return
+
+        build_ele.DeveloperName.value          = self.developer.name
+        build_ele.DeveloperSupportEmail.value  = self.developer.support.email
+        build_ele.DeveloperAddress.value       = self.developer.address.full_address
+        build_ele.DeveloperHomepage.value      = self.developer.homepage
 
     def uninstall(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """ Uninstall the plugin.

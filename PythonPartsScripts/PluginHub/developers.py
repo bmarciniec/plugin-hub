@@ -1,7 +1,6 @@
 """This module contains classes to represent developers and an index of developers."""
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Any
 
 import requests
 
@@ -16,6 +15,11 @@ class Address:
     zip: str
     country: str
 
+    @property
+    def full_address(self) -> str:
+        """Get the full address as a string."""
+        return f"{self.street}, {self.zip} {self.city}, {self.country}"
+
 @dataclass
 class Support:
     """Class for the support contact information of a developer."""
@@ -28,9 +32,16 @@ class Developer:
     id: str
     name: str
     address: Address
-    home_page: str
+    homepage: str
     support: Support
     github: str
+
+    def __post_init__(self):
+        """Post-initialization of the developer object."""
+        if isinstance(self.address, dict):
+            self.address = Address(**self.address)
+        if isinstance(self.support, dict):
+            self.support = Support(**self.support)
 
 class DeveloperIndex:
     """Class for an index of developers."""
