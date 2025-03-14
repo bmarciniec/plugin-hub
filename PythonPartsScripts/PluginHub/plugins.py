@@ -22,6 +22,7 @@ from PythonPartActionBarUtil.YamlUtil.util import (_update_manifest_file, close_
 
 from . import config
 from .allep import AllepPackage
+from .developers import Developer, DeveloperIndex
 from .installer import AllepInstaller
 from .site_libraries.version import Version
 
@@ -43,6 +44,9 @@ class PluginsCollection:
 
         self._sorted_uuids: list[UUID] = []
         """List of UUIDs in the alphabetical order of the plugins."""
+
+        self.developers = DeveloperIndex()
+        self.developers.get_developers_from_github(self.branch)
 
     def append(self, plugin: Plugin):
         """Append a plugin to the collection.
@@ -71,6 +75,12 @@ class PluginsCollection:
         plugin_list = response.json()
 
         for plugin_dict in plugin_list:
+            # Check if the developer is in the developer index
+            try:
+                plugin_dict["developer"] = self.developers[plugin_dict["developer"]]
+            except KeyError:
+                continue
+
             self.append(Plugin(**plugin_dict))
 
         self._sort_plugins()
@@ -188,7 +198,7 @@ class Plugin:
     # Required attributes
     uuid              : UUID
     name              : str
-    developer         : str
+    developer         : Developer
 
     # Optional attributes
     description       : str                     = ""
