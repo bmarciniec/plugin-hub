@@ -1,0 +1,21 @@
+[
+    {
+        "id": "allplan-gmbh",
+        "name": "ALLPLAN GmbH",
+        "address": {
+            "street": "Konrad-Zuse-Platz 1",
+            "city": "Munich",
+            "zip": "81829",
+            "country": "Germany"
+        },
+        "home_page": "https://allplan.com",
+        "support": {
+            "email": "support@allplan.com",
+            "languages": [
+                "eng",
+                "deu"
+            ]
+        },
+        "github": "https://github.com/NemetschekAllplan/"
+    }
+]
