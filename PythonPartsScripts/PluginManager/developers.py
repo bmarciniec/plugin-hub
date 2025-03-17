@@ -29,12 +29,12 @@ class Support:
 @dataclass
 class Developer:
     """Class for a developer."""
-    id: str
-    name: str
-    address: Address
-    homepage: str
-    support: Support
-    github: str
+    id       : str
+    name     : str          = ""
+    address  : Address|None = None
+    homepage : str          = ""
+    support  : Support|None = None
+    github   : str          = ""
 
     def __post_init__(self):
         """Post-initialization of the developer object."""
