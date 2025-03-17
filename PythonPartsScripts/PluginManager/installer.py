@@ -14,7 +14,7 @@ from . import exceptions
 from .allep import AllepPackage
 from .copy_files import CopyFiles
 from .site_libraries.version import Version
-from .util import Messages, close_progress_bar, make_step_progress_bar
+from .util import Messages, make_step_progress_bar
 
 ALLPLAN_VERSION = Version(AllplanSettings.AllplanVersion.Version())
 
@@ -37,12 +37,11 @@ class AllepInstaller:
         """Download and install the package.
 
         Args:
-            progress_bar: Instance of progress bar. When provided, it will be increased by 90 steps
+            progress_bar: Instance of progress bar. When provided, it will be increased by 190 steps
         """
         if not self.allep_package.downloaded:
-            make_step_progress_bar(0, "Downloading the plugin", progress_bar)
             tmp_path = Path(AllplanSettings.AllplanPaths.GetTmpPath())
-            self.allep_package.download(tmp_path)
+            self.allep_package.download(tmp_path, progress_bar)
 
         self.install_from_local_file(progress_bar)
         self.allep_package.delete_local_file()
@@ -58,45 +57,22 @@ class AllepInstaller:
             InstallRequirementsError : raised if there is an error installing requirements.
             CreateActionBarError     : raised if there is an error during creation of actb or npd file.
         """
+        make_step_progress_bar(20, "Copying contents", progress_bar)
+        self.file_copier = CopyFiles.create(self.allep_package.local_path)    # type: ignore
 
-        try:
-            make_step_progress_bar(20, "Copying contents", progress_bar)
-            self.file_copier = CopyFiles.create(self.allep_package.local_path)    # type: ignore
+        make_step_progress_bar(20, "Extracting package", progress_bar)
+        self._extract_allep()
 
-            make_step_progress_bar(20, "Extracting package", progress_bar)
-            self._extract_allep()
+        make_step_progress_bar(20, "Downloading dependencies", progress_bar)
+        self._install_requirements()
 
-        except exceptions.AbortInstallError as _:
-            close_progress_bar(progress_bar)
-            return
+        make_step_progress_bar(20, "Creating NPD & ACTB files", progress_bar)
+        self.file_copier.write_file()
 
-        except exceptions.PackageExtractionError as e:
-            close_progress_bar(progress_bar)
-            raise exceptions.PackageExtractionError from e
-
-        try:
-            make_step_progress_bar(20, "Downloading dependencies", progress_bar)
-            self._install_requirements()
-
-        except exceptions.InstallRequirementsError as e:
-            close_progress_bar(progress_bar)
-            raise exceptions.InstallRequirementsError from e
-
-        try:
-            make_step_progress_bar(20, "Creating NPD & ACTB files", progress_bar)
-            self.file_copier.write_file()
-
-        except exceptions.CreateActionBarError as e:
-            close_progress_bar(progress_bar)
-            raise exceptions.CreateActionBarError from e
-
-        make_step_progress_bar(5, "Updating manifest file", progress_bar)
+        make_step_progress_bar(10, "Updating manifest file", progress_bar)
         self._update_pyp_file()
 
         self.file_copier.create_manifest_file()
-
-        make_step_progress_bar(5, "Completed", progress_bar)
-        close_progress_bar(progress_bar)
 
 
     def _extract_allep(self):

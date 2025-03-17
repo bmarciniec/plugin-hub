@@ -23,7 +23,7 @@ from .allep import AllepPackage
 from .developers import Developer, DeveloperIndex
 from .installer import AllepInstaller
 from .site_libraries.version import Version
-from .util import close_progress_bar, date_to_str, delete_folder, make_step_progress_bar, remove_directory
+from .util import date_to_str, delete_folder, make_step_progress_bar, remove_directory
 from .yaml_models import sanitize_strings
 
 
@@ -265,10 +265,10 @@ class Plugin:
             raise ValueError("No ALLEP package found in the latest release of this plugin on GitHub.")
 
     def install(self, progress_bar: AllplanUtil.ProgressBar | None = None):
-        """Install the plugin.
+        """Install the plugin from GitHub
 
         Args:
-            progress_bar: Instance of progress_bar. When provided, it will be increased by 90 steps.
+            progress_bar: Instance of progress_bar. When provided, it will be increased by 190 steps.
         """
 
         if self.allep_package is None:
@@ -397,7 +397,6 @@ class Plugin:
         self.installed_version = None
 
         make_step_progress_bar(10, "Completed", progress_bar)
-        close_progress_bar(progress_bar) # TODO: closing the progress bar should be done in the ScriptObject
 
     @property
     def allep_package(self) -> AllepPackage | None:

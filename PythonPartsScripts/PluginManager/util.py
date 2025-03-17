@@ -12,6 +12,8 @@ from collections.abc import Generator
 import NemAll_Python_AllplanSettings as AllplanSettings
 import NemAll_Python_Utility as AllplanUtil
 
+from . import exceptions
+
 
 # TODO: move the messages to the xml localization file
 class Messages:
@@ -139,9 +141,9 @@ def make_step_progress_bar(step: int, title: str, progress_bar: AllplanUtil.Prog
     progress_bar.MakeStep(step)
 
 @contextlib.contextmanager
-def notify_user(success_msg: str|None, error_msg: str) -> Generator:
-    """Context manager to catch warnings and errors and show them to the user
-    in a message box.
+def notify_user(success_msg: str|None, error_msg: str, progress_bar: AllplanUtil.ProgressBar|None = None) -> Generator:
+    """Context manager to catch warnings and errors and show them to the user in a message box.
+    It also closes the progress bar (if provided) before showing anything to the user.
 
     In case of errors, the error message is shown to the user. The exception is also raised
     to provide more information in the trace.
@@ -150,30 +152,40 @@ def notify_user(success_msg: str|None, error_msg: str) -> Generator:
     Warnings (if any) are appended to the message.
 
     Args:
-        success_msg: message to show in case of success; None if no message should be shown
-        error_msg: message to show in case of error
+        success_msg:    message to show in case of success; None if no message should be shown
+        error_msg:      message to show in case of error
+        progress_bar:   progress bar to close before showing anything to the user
 
     Yields:
         list of warnings that appeared during the execution
+
+    Raises:
+        Exception: if an error occurred during the execution. Before raising the exception,
+                   the progress bar is closed and the error message is shown to the user.
     """
     with warnings.catch_warnings(record=True) as wrng:
-        warnings.simplefilter("always")  # Ensure all warnings are caught
+        warnings.simplefilter("always")
         try:
             yield wrng
+
+        except exceptions.AbortInstallError:
+            return
+
         except Exception as err:    # pylint: disable=broad-except
+            close_progress_bar(progress_bar)
             AllplanUtil.ShowMessageBox(f"{error_msg}\n{err}", AllplanUtil.MB_OK)
             raise
 
         if success_msg is None:
             return
-        msg = success_msg
 
         if wrng:
-            msg += " Following warnings appeared:"
+            success_msg += " Following warnings appeared:"
         for i, warning in enumerate(wrng):
-            msg += f"\n{i}. {warning.message}"
+            success_msg += f"\n{i}. {warning.message}"
 
-        AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_OK)
+        close_progress_bar(progress_bar)
+        AllplanUtil.ShowMessageBox(success_msg, AllplanUtil.MB_OK)
 
 def remove_directory(path: str):
     """Remove directories recursively and suppress OsError in case of nonempty directories
@@ -184,7 +196,7 @@ def remove_directory(path: str):
     """
 
     if not os.path.exists(path) or not os.path.isdir(path):
-        print(f"Path {path} does not exist.")
+        warnings.warn(f"Directory {path} does not exist and won't be removed.", ResourceWarning)
         return
 
     for entry in os.scandir(path):

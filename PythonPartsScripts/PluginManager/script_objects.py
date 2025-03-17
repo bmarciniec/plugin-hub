@@ -64,12 +64,14 @@ class PluginManagerScript(BaseScriptObject):
         match action_id:
             case self.build_ele.INSTALL:
                 developer_name = plugin.developer.name or plugin.developer.id
-                success_msg = f"{plugin.name} installed successfully.\n\nDeveloper: {developer_name}"
+                progress_bar   = AllplanUtil.ProgressBar(200, 0, False)  # 100 steps for download and 100 for installation
 
-                with notify_user(success_msg, "Installation failed."):
-                    plugin.install(AllplanUtil.ProgressBar(100, 0, False))
-                    self.plugins.update_building_element(self.build_ele, only_status=True)
+                with notify_user(success_msg  = f"{plugin.name} installed successfully.\n\nDeveloper: {developer_name}",
+                                 error_msg    = "Installation failed.",
+                                 progress_bar = progress_bar):
+                    plugin.install(progress_bar)
 
+                self.plugins.update_building_element(self.build_ele, only_status=True)
                 return True
 
             case self.build_ele.SHOW_DETAILS:
@@ -93,10 +95,13 @@ class PluginManagerScript(BaseScriptObject):
                     msg = f"New version {plugin.latest_version} is available. Do you want to proceed with the update?"
 
                     if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDYES:
-                        with notify_user("Plugin updated successfully.", "Update failed."):
-                            # TODO: use one progress bar
-                            plugin.uninstall(AllplanUtil.ProgressBar(100, 0, False))
-                            plugin.install(AllplanUtil.ProgressBar(100, 0, False))
+                        progress_bar = AllplanUtil.ProgressBar(180, 0, False)
+
+                        with notify_user(success_msg  = "Plugin updated successfully.",
+                                         error_msg    = "Update failed.",
+                                         progress_bar = progress_bar):
+                            plugin.uninstall(progress_bar)
+                            plugin.install(progress_bar)
 
                 self.plugins.update_building_element(self.build_ele, only_status=True)
                 return True
@@ -111,10 +116,13 @@ class PluginManagerScript(BaseScriptObject):
                 if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
                     return False
 
-                with notify_user("Plugin updated successfully.", "Update failed."):
-                    # TODO: use one progress bar
-                    plugin.uninstall(AllplanUtil.ProgressBar(100, 0, False))
-                    plugin.install(AllplanUtil.ProgressBar(100, 0, False))
+                progress_bar = AllplanUtil.ProgressBar(270, 0, False) # 70 for uninstallation, 100 steps for download, 90 for installation, 10 margin
+
+                with notify_user(success_msg   = "Plugin updated successfully.",
+                                 error_msg     = "Update failed.",
+                                 progress_bar  = progress_bar):
+                    plugin.uninstall(progress_bar)
+                    plugin.install(progress_bar)
 
                 self.plugins.update_building_element(self.build_ele, only_status=True)
                 return True
@@ -125,8 +133,11 @@ class PluginManagerScript(BaseScriptObject):
                 if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
                     return False
 
-                with notify_user("Plugin uninstalled successfully.", "Uninstallation failed."):
-                    plugin.uninstall(AllplanUtil.ProgressBar(100, 0, False))
+                progress_bar = AllplanUtil.ProgressBar(80, 0, False)
+                with notify_user(success_msg   = "Plugin uninstalled successfully.",
+                                 error_msg     = "Uninstallation failed.",
+                                 progress_bar  = progress_bar):
+                    plugin.uninstall(progress_bar)
 
                 self.plugins.clean_up()
                 self.plugins.update_building_element(self.build_ele, only_status=False)

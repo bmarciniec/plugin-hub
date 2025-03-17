@@ -3,7 +3,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import urlparse
 
+import NemAll_Python_Utility as AllplanUtil
 import requests
+
+from .util import make_step_progress_bar
 
 
 @dataclass
@@ -31,11 +34,12 @@ class AllepPackage:
         parsed = urlparse(self.url)
         return not parsed.scheme in ('http', 'https')
 
-    def download(self, save_directory: Path) -> bool:
+    def download(self, save_directory: Path, progress_bar: AllplanUtil.ProgressBar | None = None) -> bool:
         """Download the ALLEP package from the URL.
 
         Args:
             save_directory (Path): Path to the directory, where to save the ALLEP package.
+            progress_bar (AllplanUtil.ProgressBar | None): Progress bar to update. If provided, it will be increased by max 100 steps.
 
         Returns:
             bool: True if the download was done, False if the file was already downloaded.
@@ -59,11 +63,15 @@ class AllepPackage:
         response = requests.get(self.url, stream=True, timeout=10)
         response.raise_for_status()
 
+        chunk_size = 8192
+        step_size = 100 // -(- self.size // chunk_size)
+
         with open(save_path, 'wb') as file:
             downloaded_size = 0
 
-            for chunk in response.iter_content(chunk_size=8192):
+            for chunk in response.iter_content(chunk_size):
                 file.write(chunk)
+                make_step_progress_bar(step_size, "Downloading the plugin", progress_bar)
                 downloaded_size += len(chunk)
 
             self.local_path = save_path
