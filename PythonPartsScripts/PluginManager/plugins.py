@@ -17,15 +17,14 @@ import requests
 
 from BuildingElement import BuildingElement
 from FileNameService import FileNameService
-from PythonPartActionBarUtil.YamlUtil.util import (_update_manifest_file, close_progress_bar, delete_folder, make_step_progress_bar, remove_directory,
-                                                   sanitize_strings)
 
 from . import config
 from .allep import AllepPackage
 from .developers import Developer, DeveloperIndex
 from .installer import AllepInstaller
 from .site_libraries.version import Version
-from .util import date_to_str
+from .util import close_progress_bar, date_to_str, delete_folder, make_step_progress_bar, remove_directory
+from .yaml_models import sanitize_strings
 
 
 class PluginsCollection:
@@ -104,7 +103,7 @@ class PluginsCollection:
                     self.append(Plugin(
                         uuid              = plugin["UUID"],
                         name              = plugin["pluginName"],
-                        developer         = plugin["developerName"],
+                        developer         = Developer(plugin["developerName"]),
                         installed_date    = datetime.fromisoformat(plugin["createdOn"]),
                         installed_version = Version(plugin["version"]),
                         installed_files   = plugin["filesCopied"] + [plugin["ACTBFile"], plugin["NPDFile"]],
@@ -219,7 +218,7 @@ class Plugin:
         if isinstance(self.uuid, str):
             self.uuid = UUID(self.uuid)
 
-        # when getting installed files from the manifest file, they are strings and have some issues
+        # convert installed files from the manifest file to Path and fix some issues, they can have
         if len(self.installed_files) > 0 and any(isinstance(item, str) for item in self.installed_files):
             self.installed_files = set(self.installed_files)
             installed_files = cast(set[str], set(self.installed_files))
@@ -269,7 +268,7 @@ class Plugin:
         """Install the plugin.
 
         Args:
-            progress_bar: Instance of progress_bar. Defaults to None.
+            progress_bar: Instance of progress_bar. When provided, it will be increased by 90 steps.
         """
 
         if self.allep_package is None:
@@ -335,8 +334,10 @@ class Plugin:
     def uninstall(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """ Uninstall the plugin.
 
+        Removes the installed files and entried in the manifests.json file.
+
         Args:
-            progress_bar: Instance of progress_bar. Defaults to None.
+            progress_bar: Instance of progress_bar. When provided, it will be increased by 70 steps.
 
         Warns:
             ResourceWarning: If a certain file is being used by another process and cannot be removed.
@@ -348,6 +349,7 @@ class Plugin:
         folder_path   = Path(FileNameService.get_global_standard_path(f"{self.location}\\"))   # type: ignore
 
         # Remove files
+
         make_step_progress_bar(40, "Removing files", progress_bar)
 
         while self.installed_files:
@@ -365,13 +367,37 @@ class Plugin:
             remove_directory(str(plugin_directory))
             delete_folder(str(plugin_directory.parent))
 
+
+        # Update manifest file
+
         make_step_progress_bar(10, "Updating manifest files", progress_bar)
-        _update_manifest_file(self.location.capitalize(), {"UUID": str(self.uuid)})
+
+        file_path = folder_path / "AllepPlugins" / "manifests.json"
+
+        if not file_path.exists():
+            return
+
+        result  = []
+
+        with open(file_path, encoding = "UTF-8") as file:
+            manifest_data = json.load(file)
+
+            for _, plugin in enumerate(manifest_data.get("plugins", [])):
+                if plugin["UUID"] == str(self.uuid):
+                    continue
+
+                result.append(plugin)
+
+        manifest_data["plugins"] = result
+
+        with open(file_path, "w", encoding="UTF-8") as file:
+            json.dump(manifest_data, file)
+
         self.installed_date = None
         self.installed_version = None
 
         make_step_progress_bar(10, "Completed", progress_bar)
-        close_progress_bar(progress_bar)
+        close_progress_bar(progress_bar) # TODO: closing the progress bar should be done in the ScriptObject
 
     @property
     def allep_package(self) -> AllepPackage | None:

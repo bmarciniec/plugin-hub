@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ActionBar xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Role>
+    <Name>Plugins 2</Name>
+    <NameID>0</NameID>
+    <Event>EVENT_ACTIONBAR_ROLE1</Event>
+    <Task>
+      <Name>Plugin</Name>
+      <NameID>3100869</NameID>
+      <UUID></UUID>
+      <Group>
+        <Name>MyPlugin ACTB_GroupName</Name>
+        <Color>190,216,240</Color>
+        <NameID>0</NameID>
+        <Container>
+        </Container>
+      </Group>
+    </Task>
+  </Role>
+</ActionBar>

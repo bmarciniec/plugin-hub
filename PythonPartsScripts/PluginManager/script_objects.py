@@ -1,9 +1,6 @@
 """Module with the script object handling the workflow of the plugin hub"""
-import warnings
 import webbrowser
 
-from collections.abc import Generator
-from contextlib import contextmanager
 from uuid import UUID
 
 import NemAll_Python_Utility as AllplanUtil
@@ -14,6 +11,7 @@ from CreateElementResult import CreateElementResult
 from ScriptObjectInteractors.OnCancelFunctionResult import OnCancelFunctionResult
 
 from .plugins import PluginsCollection, PluginStatus
+from .util import notify_user
 
 
 class PluginManagerScript(BaseScriptObject):
@@ -37,7 +35,6 @@ class PluginManagerScript(BaseScriptObject):
         self.plugins.get_plugins_from_github()
         self.plugins.get_installed_plugins()
         self.plugins.update_building_element(self.build_ele)
-
 
     def execute(self) -> CreateElementResult:
         """Execute the element creation
@@ -66,7 +63,8 @@ class PluginManagerScript(BaseScriptObject):
 
         match action_id:
             case self.build_ele.INSTALL:
-                success_msg = f"{plugin.name} installed successfully.\n\nDeveloper: {plugin.developer}"
+                developer_name = plugin.developer.name or plugin.developer.id
+                success_msg = f"{plugin.name} installed successfully.\n\nDeveloper: {developer_name}"
 
                 with notify_user(success_msg, "Installation failed."):
                     plugin.install(AllplanUtil.ProgressBar(100, 0, False))
@@ -147,38 +145,3 @@ class PluginManagerScript(BaseScriptObject):
             return OnCancelFunctionResult.CONTINUE_INPUT
 
         return OnCancelFunctionResult.CANCEL_INPUT
-
-@contextmanager
-def notify_user(success_msg: str|None, error_msg: str) -> Generator:
-    """Context manager to catch warnings and errors and show them to the user
-    in a message box.
-
-    In case of errors, the error message is shown to the user.
-
-    In case of success, the success message (if specified) is shown to the user.
-    Warnings (if any) are appended to the message.
-
-    Args:
-        success_msg: message to show in case of success; None if no message should be shown
-        error_msg: message to show in case of error
-
-    Yields:
-        list of warnings that appeared during the execution
-    """
-    with warnings.catch_warnings(record=True) as wrng:
-        warnings.simplefilter("always")  # Ensure all warnings are caught
-        try:
-            yield wrng
-        except Exception as err:    # pylint: disable=broad-except
-            AllplanUtil.ShowMessageBox(f"{error_msg}\n{err}", AllplanUtil.MB_OK)
-        else:
-            if success_msg is None:
-                return
-            msg = success_msg
-
-            if wrng:
-                msg += " Following warnings appeared:"
-            for i, warning in enumerate(wrng):
-                msg += f"\n{i}. {warning.message}"
-
-            AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_OK)
