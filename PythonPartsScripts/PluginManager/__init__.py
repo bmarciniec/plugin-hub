@@ -1,5 +1,5 @@
 """Module with entry point functions """
-from .script_objects import PluginHubScript
+from .script_objects import PluginManagerScript
 
 
 def check_allplan_version(_build_ele, version) -> bool:
@@ -28,4 +28,4 @@ def create_script_object(build_ele, script_object_data):
         created script object
     """
 
-    return PluginHubScript(build_ele, script_object_data)
+    return PluginManagerScript(build_ele, script_object_data)

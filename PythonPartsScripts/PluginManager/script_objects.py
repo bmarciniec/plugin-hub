@@ -16,7 +16,7 @@ from ScriptObjectInteractors.OnCancelFunctionResult import OnCancelFunctionResul
 from .plugins import PluginsCollection, PluginStatus
 
 
-class PluginHubScript(BaseScriptObject):
+class PluginManagerScript(BaseScriptObject):
     """Class for analyzing a polygon"""
 
     def __init__(self,

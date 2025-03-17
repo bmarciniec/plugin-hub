@@ -2,8 +2,8 @@
 <Element xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="https://pythonparts.allplan.com/2026/schemas/PythonPart.xsd">
   <Script>
-    <Name>PluginHub.py</Name>
-    <Title>ALLPLAN Plugin Hub</Title>
+    <Name>PluginManager.py</Name>
+    <Title>ALLPLAN Plugin Manager</Title>
     <Version>0.1</Version>
   </Script>
   <Constants>

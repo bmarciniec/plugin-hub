@@ -5,18 +5,18 @@ set /p action="Do you want to install (i) or remove (R) the links? "
 set /p targetPath="Please enter the Path to Usr or Std (with trailing \): "
 
 
-if exist "%targetPath%Library\Plugin Hub.pyp" (
-    del "%targetPath%Library\Plugin Hub.pyp"
-    echo "Removed %targetPath%Library\Plugin Hub.pyp"
+if exist "%targetPath%Library\Plugin Manager.pyp" (
+    del "%targetPath%Library\Plugin Manager.pyp"
+    echo "Removed %targetPath%Library\Plugin Manager.pyp"
 ) else (
-    echo "Link %targetPath%Library\Plugin Hub.pyp does not exist"
+    echo "Link %targetPath%Library\Plugin Manager.pyp does not exist"
 )
 
-if exist "%targetPath%PythonPartsScripts\PluginHub" (
-    rmdir /S /Q "%targetPath%PythonPartsScripts\PluginHub"
-    echo "Removed %targetPath%PythonPartsScripts\PluginHub"
+if exist "%targetPath%PythonPartsScripts\PluginManager" (
+    rmdir /S /Q "%targetPath%PythonPartsScripts\PluginManager"
+    echo "Removed %targetPath%PythonPartsScripts\PluginManager"
 ) else (
-    echo "Link %targetPath%PythonPartsScripts\PluginHub does not exist"
+    echo "Link %targetPath%PythonPartsScripts\PluginManager does not exist"
 )
 
 echo "Removal process completed"
@@ -38,10 +38,10 @@ if not exist "%targetPath%\PythonPartsScripts" (
     mkdir "%targetPath%\PythonPartsScripts"
 )
 
-mklink "%targetPath%Library\Plugin Hub.pyp" "%scriptDir%Library\Plugin Hub.pyp"
-mklink /D "%targetPath%PythonPartsScripts\PluginHub" "%scriptDir%PythonPartsScripts\PluginHub"
+mklink "%targetPath%Library\Plugin Manager.pyp" "%scriptDir%Library\Plugin Manager.pyp"
+mklink /D "%targetPath%PythonPartsScripts\PluginManager" "%scriptDir%PythonPartsScripts\PluginManager"
 
-echo "PythonPart installed in Allplan. You'll find it in Library -> Office or Private -> Plugin Hub."
+echo "PythonPart installed in Allplan. You'll find it in Library -> Office or Private -> Plugin Manager."
 echo "Press any key to continue"
 pause >nul
 exit /b 0
