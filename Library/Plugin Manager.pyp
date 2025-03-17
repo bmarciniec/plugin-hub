@@ -191,18 +191,21 @@
             <Text>Installed version</Text>
             <Value> </Value>
             <ValueType>Text</ValueType>
+            <Visible>InstalledVersion</Visible>
           </Parameter>
           <Parameter>
             <Name>InstallDate</Name>
             <Text>Installation date</Text>
             <Value> </Value>
             <ValueType>Text</ValueType>
+            <Visible>InstallDate</Visible>
           </Parameter>
           <Parameter>
             <Name>InstallLocation</Name>
             <Text>Installed in</Text>
             <Value> </Value>
             <ValueType>Text</ValueType>
+            <Visible>InstallLocation</Visible>
           </Parameter>
         </Parameters>
       </Parameter>
@@ -223,11 +226,13 @@
             <Text>Address</Text>
             <Value></Value>
             <ValueType>Text</ValueType>
+            <Visible>DeveloperAddress</Visible>
           </Parameter>
           <Parameter>
             <Name>DeveloperSupportRow</Name>
             <Text>Support</Text>
             <ValueType>Row</ValueType>
+            <Visible>DeveloperSupportEmail</Visible>
             <Parameters>
               <Parameter>
                 <Name>DeveloperSupportEmail</Name>
@@ -249,6 +254,7 @@
             <Name>DeveloperHomepageRow</Name>
             <Text>Homepage</Text>
             <ValueType>Row</ValueType>
+            <Visible>DeveloperHomepage</Visible>
             <Parameters>
               <Parameter>
                 <Name>DeveloperHomepage</Name>

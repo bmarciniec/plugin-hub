@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 import warnings
 
-from calendar import c
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntEnum, StrEnum
@@ -299,11 +298,12 @@ class Plugin:
             if getattr(another_plugin, fld):
                 setattr(self, fld, getattr(another_plugin, fld))
 
-    def fill_palette(self, build_ele: BuildingElement):
+    def show_details_on_palette(self, build_ele: BuildingElement):
         """Fill the palette with the plugin information.
 
         Args:
             build_ele: Building element to populate.
+            control_props_util: Control properties utility to alter the visibility of the palette elements.
         """
         _, global_str_table = build_ele.get_string_tables()
         location_texts = {
@@ -312,20 +312,25 @@ class Plugin:
             "etc": global_str_table.get_string("e_STANDARD", "Standard"),
         }
 
+        # fill the palette with the plugin information
         build_ele.PluginUUID.value        = str(self.uuid)
         build_ele.PluginName.value        = self.name
-        build_ele.InstallDate.value       = date_to_str(self.installed_date) if self.installed_date else " "
-        build_ele.InstalledVersion.value  = str(self.installed_version) if self.installed_version else " "
-        build_ele.InstallLocation.value   = location_texts[self.location] if self.location else " "
+        build_ele.InstallDate.value       = date_to_str(self.installed_date) if self.installed_date else ""
+        build_ele.InstalledVersion.value  = str(self.installed_version) if self.installed_version else ""
+        build_ele.InstallLocation.value   = location_texts[self.location] if self.location else ""
 
+        # fill the developer information
         if isinstance(self.developer, str):
             build_ele.DeveloperName.value          = self.developer
-            return
+            build_ele.DeveloperSupportEmail.value  = ""
+            build_ele.DeveloperAddress.value       = ""
+            build_ele.DeveloperHomepage.value      = ""
 
-        build_ele.DeveloperName.value          = self.developer.name
-        build_ele.DeveloperSupportEmail.value  = self.developer.support.email
-        build_ele.DeveloperAddress.value       = self.developer.address.full_address
-        build_ele.DeveloperHomepage.value      = self.developer.homepage
+        else:
+            build_ele.DeveloperName.value          = self.developer.name
+            build_ele.DeveloperSupportEmail.value  = self.developer.support.email
+            build_ele.DeveloperAddress.value       = self.developer.address.full_address
+            build_ele.DeveloperHomepage.value      = self.developer.homepage
 
     def uninstall(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """ Uninstall the plugin.
@@ -355,7 +360,7 @@ class Plugin:
                 warnings.warn(f"File {file} is being used by another process and won't be removed. {e}", ResourceWarning)
 
         for folder in ("Library", "PythonPartsScripts", "PythonPartsActionbar"):
-            plugin_directory = folder_path / folder / "AllepPlugins" / sanitize_strings(self.developer) / sanitize_strings(self.name)
+            plugin_directory = folder_path / folder / "AllepPlugins" / sanitize_strings(self.developer.name) / sanitize_strings(self.name)
             make_step_progress_bar(10, "Removing directories", progress_bar)
             remove_directory(str(plugin_directory))
             delete_folder(str(plugin_directory.parent))

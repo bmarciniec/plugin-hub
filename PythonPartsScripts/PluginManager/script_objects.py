@@ -75,7 +75,7 @@ class PluginManagerScript(BaseScriptObject):
                 return True
 
             case self.build_ele.SHOW_DETAILS:
-                plugin.fill_palette(self.build_ele)
+                plugin.show_details_on_palette(self.build_ele)
                 self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_DETAILS
                 return True
 
