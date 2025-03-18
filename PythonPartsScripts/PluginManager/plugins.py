@@ -30,7 +30,6 @@ from .yaml_models import sanitize_strings
 class PluginsCollection:
     """Representation of a collection of ALLPLAN plugins."""
 
-    branch = 'main' if AllplanSettings.AllplanVersion.MainReleaseName() == "9999" else AllplanSettings.AllplanVersion.MainReleaseName()
 
     def __init__(self, plugins: dict[UUID, Plugin] | None = None):
         """Initialization of the PluginsCollection.
@@ -45,8 +44,7 @@ class PluginsCollection:
         self._sorted_uuids: list[UUID] = []
         """List of UUIDs in the alphabetical order of the plugins."""
 
-        self.developers = DeveloperIndex()
-        self.developers.get_developers_from_github(self.branch)
+        self.developers = DeveloperIndex.from_github()
 
     def append(self, new_plugin: Plugin):
         """Append a new plugin to the collection.
@@ -66,9 +64,7 @@ class PluginsCollection:
     def get_plugins_from_github(self):
         """ Get the plugins from the allplan-plugins.json file in the GitHub repository."""
 
-        url = f'https://raw.githubusercontent.com/{config.PluginHubRepo.OWNER}/{config.PluginHubRepo.REPO}/{self.branch}/allplan-extensions.json'
-
-        response = requests.get(url, timeout=10, headers=config.GITHUB_API_HEADERS)
+        response = requests.get(config.EXTENSIONS_URL, timeout=10, headers=config.GITHUB_API_HEADERS)
         response.raise_for_status()
         plugin_list = response.json()
 
@@ -319,17 +315,10 @@ class Plugin:
         build_ele.InstallLocation.value   = location_texts[self.location] if self.location else ""
 
         # fill the developer information
-        if isinstance(self.developer, str):
-            build_ele.DeveloperName.value          = self.developer
-            build_ele.DeveloperSupportEmail.value  = ""
-            build_ele.DeveloperAddress.value       = ""
-            build_ele.DeveloperHomepage.value      = ""
-
-        else:
-            build_ele.DeveloperName.value          = self.developer.name
-            build_ele.DeveloperSupportEmail.value  = self.developer.support.email
-            build_ele.DeveloperAddress.value       = self.developer.address.full_address
-            build_ele.DeveloperHomepage.value      = self.developer.homepage
+        build_ele.DeveloperName.value          = self.developer.name or self.developer.id
+        build_ele.DeveloperSupportEmail.value  = self.developer.support.email if self.developer.support else ""
+        build_ele.DeveloperAddress.value       = self.developer.address.full_address if self.developer.address else ""
+        build_ele.DeveloperHomepage.value      = self.developer.homepage
 
     def uninstall(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """ Uninstall the plugin.
@@ -452,8 +441,10 @@ class Plugin:
         if self.installed_version is None:
             return PluginStatus.NOT_INSTALLED
 
-        if self._latest_version is not None:
-            if self.installed_version < self._latest_version:
-                return PluginStatus.UPDATE_AVAILABLE
-            return PluginStatus.UP_TO_DATE
-        return PluginStatus.INSTALLED
+        if self._latest_version is None:
+            return PluginStatus.INSTALLED
+
+        if self.installed_version < self._latest_version:
+            return PluginStatus.UPDATE_AVAILABLE
+
+        return PluginStatus.UP_TO_DATE
