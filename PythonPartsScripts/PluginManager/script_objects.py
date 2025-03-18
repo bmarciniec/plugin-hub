@@ -1,6 +1,8 @@
 """Module with the script object handling the workflow of the plugin hub"""
+import sys
 import webbrowser
 
+from pathlib import Path
 from uuid import UUID
 
 import NemAll_Python_Utility as AllplanUtil
@@ -10,6 +12,8 @@ from BuildingElement import BuildingElement
 from CreateElementResult import CreateElementResult
 from ScriptObjectInteractors.OnCancelFunctionResult import OnCancelFunctionResult
 
+from .allep import AllepPackage
+from .installer import AllepInstaller
 from .plugins import PluginsCollection, PluginStatus
 from .util import notify_user
 
@@ -26,8 +30,26 @@ class PluginManagerScript(BaseScriptObject):
             build_ele:          building element with the parameter properties
             script_object_data: script object data
         """
-
         super().__init__(script_object_data)
+
+        # Installation per drag and drop
+        if sys.argv and sys.argv != [""]:
+            allep_path   = Path(sys.argv)    #type: ignore
+            package      = AllepPackage(allep_path.name, local_path=allep_path)
+            progress_bar = AllplanUtil.ProgressBar(100, 0, False)
+
+            with notify_user(success_msg  = f"{allep_path.name} installed successfully.",
+                             error_msg    = "Installation failed.",
+                             progress_bar = progress_bar):
+
+                installer = AllepInstaller(package)
+                installer.install_from_local_file()
+
+            sys.argv = [""]
+            self.coord_input.CancelInput()
+
+            # return
+
         self.build_ele = build_ele
 
         # Get the plugins from the GitHub repository sorted by name
