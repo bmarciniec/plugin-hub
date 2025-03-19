@@ -23,7 +23,7 @@ from PythonPartActionBarUtil.YamlUtil.util import (_update_manifest_file, close_
 from . import config
 from .allep import AllepPackage
 from .installer import AllepInstaller
-from .site_libraries.version import Version
+from .site_libraries.version import Version, InvalidVersion
 
 
 class PluginsCollection:
@@ -245,7 +245,10 @@ class Plugin:
         release = response.json()
 
         self._last_version_check = datetime.now()
-        self._latest_version = Version(release["name"])
+        try:
+            self._latest_version = Version(release["tag_name"])
+        except InvalidVersion as err:
+            raise InvalidVersion(f"The latest release has a version in an invalid format ({release["tag_name"]}). Please inform the developer.") from err
 
         for asset in release["assets"]:
             if asset["name"].lower().endswith(".allep"):
