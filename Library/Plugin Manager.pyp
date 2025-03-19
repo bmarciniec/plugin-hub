@@ -7,7 +7,7 @@
     <Version>0.1</Version>
   </Script>
   <Constants>
-    <!-- Actions -->
+    <!-- Actions on the overview page (1001-1500) -->
     <Constant>
       <Name>INSTALL</Name>
       <Value>1001</Value>
@@ -33,14 +33,15 @@
       <Value>1005</Value>
       <ValueType>Integer</ValueType>
     </Constant>
+    <!-- Actions on the detail page (1501-2000) -->
     <Constant>
       <Name>EMAIL_TO_SUPPORT</Name>
-      <Value>1006</Value>
+      <Value>1501</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
       <Name>GO_TO_HOMEPAGE</Name>
-      <Value>1007</Value>
+      <Value>1502</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <!-- Palette states -->

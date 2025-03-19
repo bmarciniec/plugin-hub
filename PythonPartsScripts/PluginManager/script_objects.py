@@ -78,7 +78,7 @@ class PluginManagerScript(BaseScriptObject):
         plugin_index = event_id >> 16
         action_id  = event_id - (plugin_index << 16)
 
-        if plugin_index == 0:   # when button was clicked on the detail page
+        if 1500 < action_id < 2000:   # when button was clicked on the detail page
             plugin = self.plugins[UUID(self.build_ele.PluginUUID.value)]
         else:                   # when button was clicked on the overview page
             plugin = self.plugins[plugin_index]
