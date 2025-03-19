@@ -2,7 +2,7 @@
     {
         "uuid": "f86d7b11-096b-4f0c-8702-5bce3a45b88a",
         "name": "Fixture placement",
-        "developer": "Allplan GmbH",
+        "developer": "allplan-gmbh",
         "description": "Tool for placing fixtures made with VisualScripting in a more efficient way",
         "github": {
             "owner": "bmarciniec",
@@ -12,7 +12,7 @@
     {
         "uuid": "7612a6aa-0e83-4b62-a548-d18a3c30e7d7",
         "name": "Batch IFC & DWG Export",
-        "developer": "Allplan GmbH",
+        "developer": "allplan-gmbh",
         "description": "The plugin allows you to automatically export multiple IFC and DWG files.",
         "github": {
             "owner": "xinling-xu",
@@ -22,11 +22,21 @@
     {
         "uuid": "fc33264f-5895-431e-a160-b0ff211f6fdf",
         "name": "Transfer formwork to Rebar Attributes",
-        "developer": "Allplan GmbH",
+        "developer": "allplan-gmbh",
         "description": "This plugin transfers attributes from 3D volumes upon rebar using a containment algoritm",
         "github": {
             "owner": "bertvo-allplan",
             "repo": "AllplanFormworkAttributeTransfer"
+        }
+    },
+    {
+        "uuid": "704cbe81-47f0-48d0-bfab-67b646d7edd4",
+        "name": "Batch DWG export from favourites",
+        "developer": "allplan-cz",
+        "description": "Tool for exporting multiple drawings from favourites to designated folder.",
+        "github": {
+            "owner": "allplan-mkovac",
+            "repo": "Export-DWG"
         }
     }
 ]

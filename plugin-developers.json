@@ -1,0 +1,39 @@
+[
+    {
+        "id": "allplan-gmbh",
+        "name": "ALLPLAN GmbH",
+        "address": {
+            "street": "Konrad-Zuse-Platz 1",
+            "city": "Munich",
+            "zip": "81829",
+            "country": "Germany"
+        },
+        "homepage": "https://www.allplan.com",
+        "support": {
+            "email": "support@allplan.com",
+            "languages": [
+                "eng",
+                "deu"
+            ]
+        },
+        "github": "https://github.com/NemetschekAllplan/"
+    },
+    {
+        "id": "allplan-cz",
+        "name": "ALLPLAN Česko s.r.o.",
+        "address": {
+            "street": "Evropská 2590/33c",
+            "city": "Praha 6",
+            "zip": "160 00",
+            "country": "Czech Republic"
+        },
+        "homepage": "https://www.allplan.com/cz",
+        "support": {
+            "email": "info.cz@allplan.com",
+            "languages": [
+                "eng",
+                "cze"
+            ]
+        }
+    }
+]
