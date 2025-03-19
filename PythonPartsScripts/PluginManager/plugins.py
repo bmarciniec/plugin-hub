@@ -22,7 +22,7 @@ from . import config
 from .allep import AllepPackage
 from .developers import Developer, DeveloperIndex
 from .installer import AllepInstaller
-from .site_libraries.version import Version
+from .site_libraries.version import InvalidVersion, Version
 from .util import date_to_str, delete_folder, make_step_progress_bar, remove_directory
 from .yaml_models import sanitize_strings
 
@@ -249,7 +249,10 @@ class Plugin:
         release = response.json()
 
         self._last_version_check = datetime.now()
-        self._latest_version = Version(release["name"])
+        try:
+            self._latest_version = Version(release["tag_name"])
+        except InvalidVersion as err:
+            raise InvalidVersion(f"The latest release has a version in an invalid format ({release["tag_name"]}). Please inform the developer.") from err
 
         for asset in release["assets"]:
             if asset["name"].lower().endswith(".allep"):
