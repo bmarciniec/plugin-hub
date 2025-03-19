@@ -28,6 +28,7 @@
             "owner": "bertvo-allplan",
             "repo": "AllplanFormworkAttributeTransfer"
         }
+    },
     {
         "uuid": "704cbe81-47f0-48d0-bfab-67b646d7edd4",
         "name": "Batch DWG export from favourites",
@@ -37,6 +38,5 @@
             "owner": "allplan-mkovac",
             "repo": "Export-DWG"
         }
-    }
     }
 ]
