@@ -13,7 +13,7 @@ from pydantic import ValidationError
 from . import exceptions
 from .allep import AllepPackage
 from .copy_files import CopyFiles
-from .site_libraries.version import Version
+from .site_libraries.packaging.version import Version
 from .util import Messages, make_step_progress_bar
 
 ALLPLAN_VERSION = Version(AllplanSettings.AllplanVersion.Version())

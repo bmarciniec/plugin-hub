@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import cast
 from uuid import UUID
 
-import NemAll_Python_AllplanSettings as AllplanSettings
 import NemAll_Python_Utility as AllplanUtil
 import requests
 
@@ -22,7 +21,7 @@ from . import config
 from .allep import AllepPackage
 from .developers import Developer, DeveloperIndex
 from .installer import AllepInstaller
-from .site_libraries.version import InvalidVersion, Version
+from .site_libraries.packaging.version import InvalidVersion, Version
 from .util import date_to_str, delete_folder, make_step_progress_bar, remove_directory
 from .yaml_models import sanitize_strings
 
