@@ -18,10 +18,11 @@ from BuildingElement import BuildingElement
 from FileNameService import FileNameService
 
 from . import config
-from .allep import AllepPackage
 from .developers import Developer, DeveloperIndex
 from .installer import AllepInstaller
-from .site_libraries.packaging.version import InvalidVersion, Version
+from .releases import Release, Releases
+from .site_libraries.packaging.specifiers import SpecifierSet
+from .site_libraries.packaging.version import Version
 from .util import date_to_str, delete_folder, make_step_progress_bar, remove_directory
 from .yaml_models import sanitize_strings
 
@@ -94,7 +95,7 @@ class PluginsCollection:
                 manifest = json.load(file)
 
             for plugin_data in manifest["plugins"]:
-                self.append(Plugin.from_maifest_data(location, plugin_data))
+                self.append(Plugin.from_manifest_data(location, plugin_data))
 
     def update_building_element(self, build_ele: BuildingElement, only_status: bool = False):
         """Populate the building element with the plugin information.
@@ -192,11 +193,11 @@ class Plugin:
     installed_version : Version | None          = field(default=None)
     location          : InstallLocations | None = field(default=None)
     local_file        : Path | None             = field(default=None)
+    compatibility     : SpecifierSet | None     = field(default=None)
 
     # Internal attributes
-    _latest_version     : Version | None      = field(init=False, default=None)
     _last_version_check : datetime | None     = field(init=False, default=None, repr=False, compare=False)
-    _allep_package      : AllepPackage | None = field(init=False, default=None)
+    _releases           : Releases            = field(init=False, default_factory=Releases)
 
     def __post_init__(self):
         """Post initialization of the Plugin object."""
@@ -221,24 +222,26 @@ class Plugin:
 
     @classmethod
     def from_github_data(cls, data: dict) -> Plugin:
-        """Create a plugin based on data from the GitHub API.
+        """Create a plugin based on an entry in the allplan-extensions.json in the plugin hub.
 
         Args:
-            data (dict): Dictionary with the plugin data from the GitHub API.
+            data (dict): Dictionary with the plugin data.
 
         Returns:
             Plugin: Plugin object created from the data.
         """
+        compatibility = SpecifierSet(data["compatibility"]) if data.get("compatibility") else None
         return cls(
-            uuid        = UUID(data["uuid"]),
-            name        = data["name"],
-            developer   = data["developer"],
-            description = data["description"],
-            github      = data["github"],
+            uuid          = UUID(data["uuid"]),
+            name          = data["name"],
+            developer     = data["developer"],
+            description   = data["description"],
+            github        = data["github"],
+            compatibility = compatibility
         )
 
     @classmethod
-    def from_maifest_data(cls, location: InstallLocations, data: dict) -> Plugin:
+    def from_manifest_data(cls, location: InstallLocations, data: dict) -> Plugin:
         """Create a plugin based on entry in the manifests.json file.
 
         Args:
@@ -258,51 +261,37 @@ class Plugin:
             location          = location
         )
 
-    def check_latest_release(self):
-        """Check the latest version of the plugin.
-
-        Raises:
-            requests.HTTPError: If the request to the GitHub API fails.
-            ValueError: If the plugin does not have a GitHub repository or if no ALLEP package is found in the release assets
-        """
-        if not self.has_github:
-            raise ValueError("Plugin does not have a GitHub repository attached.")
-
-        url = f"https://api.github.com/repos/{self.github["owner"]}/{self.github["repo"]}/releases/latest"
+    def _get_all_releases(self):
+        """Get the releases of the plugin from the GitHub repository."""
+        url = f"https://api.github.com/repos/{self.github["owner"]}/{self.github["repo"]}/releases"
 
         response = requests.get(url, timeout=10, headers=config.GITHUB_API_HEADERS)
         response.raise_for_status()
-        release = response.json()
+        releases = response.json()
 
-        self._last_version_check = datetime.now()
-        try:
-            self._latest_version = Version(release["tag_name"])
-        except InvalidVersion as err:
-            raise InvalidVersion(f"The latest release has a version in an invalid format ({release["tag_name"]}). Please inform the developer.") from err
-
-        for asset in release["assets"]:
-            if asset["name"].lower().endswith(".allep"):
-                self._allep_package = AllepPackage(
-                    name = asset["name"],
-                    url = asset["browser_download_url"],
-                    size = asset["size"])
-                break
-            raise ValueError("No ALLEP package found in the latest release of this plugin on GitHub.")
+        for release_data in releases:
+            self._releases.add(Release.from_github_data(release_data))
 
     def install(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """Install the plugin from GitHub
 
         Args:
             progress_bar: Instance of progress_bar. When provided, it will be increased by 190 steps.
+
+        Raises:
+            RuntimeError: when trying to install a plugin with no release compatible with this ALLPLAN version
         """
 
-        if self.allep_package is None:
-            self.check_latest_release()
+        if not self._releases:
+            self._get_all_releases()
 
-        installer = AllepInstaller(self.allep_package)
+        if self.latest_compatible_release is None:
+            raise RuntimeError("Cannot install this plugin, as no release compatible with this Allplan version was found")
+
+        installer = AllepInstaller(self.latest_compatible_release.allep_package)
         installer.download_and_install_package(progress_bar)
 
-        self.installed_version = self.latest_version
+        self.installed_version = self.latest_compatible_release.version
         self.installed_date    = datetime.now()
 
     def fetch(self, another_plugin: Plugin):
@@ -416,15 +405,6 @@ class Plugin:
         make_step_progress_bar(10, "Completed", progress_bar)
 
     @property
-    def allep_package(self) -> AllepPackage | None:
-        """Get the ALLEP package attached to the latest release.
-
-        Returns:
-            AllepPackage: ALLEP package attached to the latest release.
-        """
-        return self._allep_package
-
-    @property
     def has_github(self) -> bool:
         """Check if the plugin has a GitHub repository attached.
 
@@ -446,18 +426,41 @@ class Plugin:
         return any(file.name.lower().endswith(".actb") for file in self.installed_files)
 
     @property
-    def latest_version(self) -> Version:
-        """Get the latest version of the plugin.
+    def latest_compatible_release(self) -> Release | None:
+        """Get the latest version of the plugin, that is compatible with the current ALLPLAN version
+
+        If no compatibility information is provided, the release marked in github as latest is returned.
 
         Returns:
-            Version: Latest version of the plugin.
+            Version: Latest version of the plugin. None if no compatible version is found.
 
         Raises:
             RuntimeError: If the plugin does not have a GitHub repository attached
         """
         if not self.has_github:
             raise RuntimeError("Cannot get the latest version of the plugin because there is no GitHub repository attached.")
-        return cast(Version, self._latest_version)
+
+        # when no compatibility is set, get the release marked in GitHub as latest
+        if not self.compatibility:
+            return self._releases.get_latest(self.github["owner"], self.github["repo"])
+
+        # get the latest release that is compatible with the current version of Allplan
+        return self._releases.get_latest_matching(self.compatibility)
+
+    @property
+    def releases(self) -> set[Release]:
+        """Get a subset of all releases (also pre-releases), that are compatible with the current ALLPLAN version
+
+        Returns:
+            Releases: Releases of the plugin.
+        """
+        if self.has_github and not self._releases:
+            self._get_all_releases()
+
+        if self.compatibility is not None:
+            return self._releases.get_matching(self.compatibility, True)
+
+        return self._releases
 
     @property
     def status(self) -> PluginStatus:
@@ -469,10 +472,12 @@ class Plugin:
         if self.installed_version is None:
             return PluginStatus.NOT_INSTALLED
 
-        if self._latest_version is None:
+        if not self.has_github:
             return PluginStatus.INSTALLED
 
-        if self.installed_version < self._latest_version:
+        latest_compatible = self.latest_compatible_release
+
+        if self.installed_version < latest_compatible.version:
             return PluginStatus.UPDATE_AVAILABLE
 
         return PluginStatus.UP_TO_DATE

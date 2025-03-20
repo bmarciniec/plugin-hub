@@ -35,9 +35,7 @@ def add_python_paths():
 if __name__ == '__main__':
     add_python_paths()
 
-    from tests import test_releases
-
-    # from tests import test_plugins
+    from tests import test_plugins, test_releases
 
     unittest.main(test_releases)
-    # unittest.main(test_plugins)
+    unittest.main(test_plugins)

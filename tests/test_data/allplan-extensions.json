@@ -1,0 +1,54 @@
+[
+    {
+        "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        "name": "Example Plugin 1",
+        "developer": "another-developer",
+        "description": "This is an example description for plugin 1.",
+        "github": {
+            "owner": "example-owner1",
+            "repo": "example-repo1"
+        }
+    },
+    {
+        "uuid": "c9bf9e57-1685-4c89-bafb-ff5af830be8a",
+        "name": "Example Plugin 2",
+        "developer": "another-developer",
+        "description": "This is an example description for plugin 2.",
+        "github": {
+            "owner": "example-owner1",
+            "repo": "example-repo2"
+        }
+    },
+    {
+        "uuid": "e7d3e8e2-8b2d-4d8d-8b2d-4d8d8b2d4d8d",
+        "name": "Example Plugin 3",
+        "developer": "some-developer",
+        "description": "This is an example description for plugin 3.",
+        "github": {
+            "owner": "example-owner3",
+            "repo": "example-repo3"
+        }
+    },
+    {
+        "uuid": "a3bb189e-8bf9-3888-9912-ace4e6543002",
+        "name": "Example Plugin 4",
+        "developer": "example-developer",
+        "description": "This is an example description for plugin 4.",
+        "github": {
+            "owner": "example-owner4",
+            "repo": "example-repo4"
+        },
+        "compatibility": "~=1.0"
+    }
+    ,
+    {
+        "uuid": "b2d3e8e2-8b2d-4d8d-8b2d-4d8d8b2d4d8e",
+        "name": "Example Plugin 5",
+        "developer": "non-existing-developer",
+        "description": "This is an example description for plugin 5.",
+        "github": {
+            "owner": "example-owner5",
+            "repo": "example-repo5"
+        }
+    }
+]
