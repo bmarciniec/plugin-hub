@@ -58,10 +58,9 @@ class CopyFiles(AppConfig):
         Returns:
             str: Full path of the newily created folder.
         """
-        full_path      = os.path.join(path, "")
 
-        os.makedirs(full_path, exist_ok = True)
-        return full_path
+        os.makedirs(path, exist_ok = True)
+        return path
 
     def get_directories(self, package: ZipFile) -> set:
         """Get directories in Archive.

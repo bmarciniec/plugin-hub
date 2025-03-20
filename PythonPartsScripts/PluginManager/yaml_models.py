@@ -411,7 +411,7 @@ class AppConfig(Base):
         uuid.text = self.plugin.UUID
 
         # Add NameID in group
-        npd_hash                = AllPlanUtility.GetPluginNameHash(f"{self.installation.get_update_target_location()}\\PythonPartsActionbar\\AllepPlugins\\{self.plugin.UUID}.npd")
+        npd_hash                = AllPlanUtility.GetPluginNameHash(f"{self.installation.get_update_target_location()}\\PythonPartsActionbar\\{self.plugin.UUID}.npd")
         group                   = task_tag.find("Group")
         group.find("NameID").text = f"PLUGIN_||10||{self.plugin.name}#{npd_hash}"
 
