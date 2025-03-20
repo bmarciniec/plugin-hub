@@ -30,7 +30,6 @@ from .yaml_models import sanitize_strings
 class PluginsCollection:
     """Representation of a collection of ALLPLAN plugins."""
 
-
     def __init__(self, plugins: dict[UUID, Plugin] | None = None):
         """Initialization of the PluginsCollection.
 
@@ -75,7 +74,13 @@ class PluginsCollection:
             except KeyError:
                 continue
 
-            self.append(Plugin(**plugin_dict))
+            self.append(Plugin(
+                uuid        = plugin_dict["uuid"],
+                name        = plugin_dict["name"],
+                developer   = plugin_dict["developer"],
+                description = plugin_dict["description"],
+                github      = plugin_dict["github"],
+            ))
 
         self._sort_plugins()
 
@@ -231,7 +236,6 @@ class Plugin:
                 if absolute_path.exists() and absolute_path.is_file():
                     self.installed_files.add(absolute_path)
 
-
     def check_latest_release(self):
         """Check the latest version of the plugin.
 
@@ -358,7 +362,6 @@ class Plugin:
             make_step_progress_bar(10, "Removing directories", progress_bar)
             remove_directory(str(plugin_directory))
             delete_folder(str(plugin_directory.parent))
-
 
         # Update manifest file
 
