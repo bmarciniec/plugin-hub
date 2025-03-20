@@ -70,7 +70,7 @@ class AllepInstaller:
         self.file_copier.write_file()
 
         make_step_progress_bar(10, "Updating manifest file", progress_bar)
-        self._update_pyp_file()
+        # self._update_pyp_file()
 
         self.file_copier.create_manifest_file()
 

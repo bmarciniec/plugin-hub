@@ -24,7 +24,7 @@ class CopyFiles(AppConfig):
             str: Full path to library folder.
         """
 
-        return f"{self.installation.get_path_function()}Library\\AllepPlugins\\{self.plugin.developer}\\{self.plugin.name}"
+        return f"{self.installation.get_path_function()}Library"
 
     def _get_std_path(self) -> str:
         """Get path of STD folder.
@@ -59,11 +59,8 @@ class CopyFiles(AppConfig):
             str: Full path of the newily created folder.
         """
 
-        directory_name = f"{self.plugin.developer}\\{self.plugin.name}"
-        full_path      = os.path.join(path, directory_name)
-
-        os.makedirs(full_path, exist_ok = True)
-        return full_path
+        os.makedirs(path, exist_ok = True)
+        return path
 
     def get_directories(self, package: ZipFile) -> set:
         """Get directories in Archive.
@@ -127,8 +124,7 @@ class CopyFiles(AppConfig):
                 if not directory_name:
                     continue
 
-                folder       = "AllepPlugins"
-                library      = f"{path}{directory_name}\\{folder}"
+                library      = f"{path}{directory_name}"
 
 
                 directory_path = self._make_directory(library)
