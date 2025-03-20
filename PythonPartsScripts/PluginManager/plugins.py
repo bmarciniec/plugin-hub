@@ -73,13 +73,7 @@ class PluginsCollection:
             except KeyError:
                 continue
 
-            self.append(Plugin(
-                uuid        = plugin_dict["uuid"],
-                name        = plugin_dict["name"],
-                developer   = plugin_dict["developer"],
-                description = plugin_dict["description"],
-                github      = plugin_dict["github"],
-            ))
+            self.append(Plugin.from_github_data(plugin_dict))
 
         self._sort_plugins()
 
@@ -97,18 +91,10 @@ class PluginsCollection:
                 continue
 
             with open(manifests_path, encoding = "UTF-8") as file:
-                manifest_data = json.load(file)
+                manifest = json.load(file)
 
-                for plugin in manifest_data["plugins"]:
-                    self.append(Plugin(
-                        uuid              = plugin["UUID"],
-                        name              = plugin["pluginName"],
-                        developer         = Developer(plugin["developerName"]),
-                        installed_date    = datetime.fromisoformat(plugin["createdOn"]),
-                        installed_version = Version(plugin["version"]),
-                        installed_files   = plugin["filesCopied"] + [plugin["ACTBFile"], plugin["NPDFile"]],
-                        location          = location,
-                    ))
+            for plugin_data in manifest["plugins"]:
+                self.append(Plugin.from_maifest_data(location, plugin_data))
 
     def update_building_element(self, build_ele: BuildingElement, only_status: bool = False):
         """Populate the building element with the plugin information.
@@ -214,11 +200,9 @@ class Plugin:
 
     def __post_init__(self):
         """Post initialization of the Plugin object."""
-        # when getting plugins from github, uuid is a string
-        if isinstance(self.uuid, str):
-            self.uuid = UUID(self.uuid)
 
         # convert installed files from the manifest file to Path and fix some issues, they can have
+        # TODO: when the issue with paths in manifest files is fixed, move thi spart to from_manifest_data
         if len(self.installed_files) > 0 and any(isinstance(item, str) for item in self.installed_files):
             self.installed_files = set(self.installed_files)
             installed_files = cast(set[str], set(self.installed_files))
@@ -234,6 +218,45 @@ class Plugin:
 
                 if absolute_path.exists() and absolute_path.is_file():
                     self.installed_files.add(absolute_path)
+
+    @classmethod
+    def from_github_data(cls, data: dict) -> Plugin:
+        """Create a plugin based on data from the GitHub API.
+
+        Args:
+            data (dict): Dictionary with the plugin data from the GitHub API.
+
+        Returns:
+            Plugin: Plugin object created from the data.
+        """
+        return cls(
+            uuid        = UUID(data["uuid"]),
+            name        = data["name"],
+            developer   = data["developer"],
+            description = data["description"],
+            github      = data["github"],
+        )
+
+    @classmethod
+    def from_maifest_data(cls, location: InstallLocations, data: dict) -> Plugin:
+        """Create a plugin based on entry in the manifests.json file.
+
+        Args:
+            data (dict): Dictionary with the plugin data from the manifests.json file.
+            location (InstallLocations): Location where the plugin is installed.
+
+        Returns:
+            Plugin: Plugin object created from the data.
+        """
+        return cls(
+            uuid              = data["UUID"],
+            name              = data["pluginName"],
+            developer         = Developer(data["developerName"]),
+            installed_date    = datetime.fromisoformat(data["createdOn"]),
+            installed_version = Version(data["version"]),
+            installed_files   = data["filesCopied"] + [data["ACTBFile"], data["NPDFile"]],
+            location          = location
+        )
 
     def check_latest_release(self):
         """Check the latest version of the plugin.
