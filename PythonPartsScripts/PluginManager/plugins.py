@@ -108,8 +108,6 @@ class PluginsCollection:
             build_ele (BuildingElement): Building element to populate.
             only_status (bool): If True, only the status of the plugins is updated, otherwise all the plugin information is updated.
         """
-        build_ele.PluginStates.value        = [plgn.status for plgn in self]
-
         if only_status:
             return
 
@@ -313,13 +311,18 @@ class Plugin:
             if getattr(another_plugin, fld):
                 setattr(self, fld, getattr(another_plugin, fld))
 
-    def show_details_on_palette(self, build_ele: BuildingElement):
+    def update_plugin_details_on_palette(self, build_ele: BuildingElement, only_status: bool = False):
         """Fill the palette with the plugin information.
 
         Args:
             build_ele: Building element to populate.
             control_props_util: Control properties utility to alter the visibility of the palette elements.
         """
+        build_ele.PluginStatus.value = self.status
+
+        if only_status:
+            return
+
         _, global_str_table = build_ele.get_string_tables()
         location_texts = {
             "std": global_str_table.get_string("e_OFFICE", "Office"),
@@ -403,6 +406,7 @@ class Plugin:
 
         self.installed_date = None
         self.installed_version = None
+        self.location = None
 
         make_step_progress_bar(10, "Completed", progress_bar)
 

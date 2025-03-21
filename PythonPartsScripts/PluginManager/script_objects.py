@@ -90,6 +90,10 @@ class PluginManagerScript(BaseScriptObject):
 
         match action_id:
             case self.build_ele.INSTALL:
+                msg = f"You are about to install {plugin.name}.\nWould you like to proceed?"
+                if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
+                    return False
+
                 developer_name = plugin.developer.name or plugin.developer.id
                 progress_bar   = AllplanUtil.ProgressBar(200, 0, False)  # 100 steps for download and 100 for installation
 
@@ -98,11 +102,11 @@ class PluginManagerScript(BaseScriptObject):
                                  progress_bar = progress_bar):
                     plugin.install(progress_bar)
 
-                self.plugins.update_building_element(self.build_ele, only_status=True)
+                plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
                 return True
 
             case self.build_ele.SHOW_DETAILS:
-                plugin.show_details_on_palette(self.build_ele)
+                plugin.update_plugin_details_on_palette(self.build_ele)
                 self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_DETAILS
                 return True
 
@@ -130,7 +134,7 @@ class PluginManagerScript(BaseScriptObject):
                             plugin.uninstall(progress_bar)
                             plugin.install(progress_bar)
 
-                self.plugins.update_building_element(self.build_ele, only_status=True)
+                plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
                 return True
 
             case self.build_ele.EMAIL_TO_SUPPORT:
@@ -138,7 +142,7 @@ class PluginManagerScript(BaseScriptObject):
                 return False
 
             case self.build_ele.UPDATE:
-                msg = f"You are about to update {plugin.name} from {plugin.installed_version} to {plugin.latest_compatible_release}.\nWould you like to Proceed?"
+                msg = f"You are about to update {plugin.name} from {plugin.installed_version} to {plugin.latest_compatible_release}.\nWould you like to proceed?"
 
                 if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
                     return False
@@ -151,7 +155,7 @@ class PluginManagerScript(BaseScriptObject):
                     plugin.uninstall(progress_bar)
                     plugin.install(progress_bar)
 
-                self.plugins.update_building_element(self.build_ele, only_status=True)
+                plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
                 return True
 
             case self.build_ele.UNINSTALL:
@@ -168,6 +172,8 @@ class PluginManagerScript(BaseScriptObject):
 
                 self.plugins.clean_up()
                 self.plugins.update_building_element(self.build_ele, only_status=False)
+                self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_OVERVIEW
+
                 return True
 
         return False

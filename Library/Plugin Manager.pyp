@@ -9,28 +9,8 @@
   <Constants>
     <!-- Actions on the overview page (1001-1500) -->
     <Constant>
-      <Name>INSTALL</Name>
-      <Value>1001</Value>
-      <ValueType>Integer</ValueType>
-    </Constant>
-    <Constant>
-      <Name>CHECK_FOR_UPDATES</Name>
-      <Value>1002</Value>
-      <ValueType>Integer</ValueType>
-    </Constant>
-    <Constant>
-      <Name>UPDATE</Name>
-      <Value>1003</Value>
-      <ValueType>Integer</ValueType>
-    </Constant>
-    <Constant>
       <Name>SHOW_DETAILS</Name>
       <Value>1004</Value>
-      <ValueType>Integer</ValueType>
-    </Constant>
-    <Constant>
-      <Name>UNINSTALL</Name>
-      <Value>1005</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <!-- Actions on the detail page (1501-2000) -->
@@ -42,6 +22,26 @@
     <Constant>
       <Name>GO_TO_HOMEPAGE</Name>
       <Value>1502</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>INSTALL</Name>
+      <Value>1503</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>CHECK_FOR_UPDATES</Name>
+      <Value>1504</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>UPDATE</Name>
+      <Value>1505</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>UNINSTALL</Name>
+      <Value>1506</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <!-- Palette states -->
@@ -88,56 +88,8 @@
                 <ValueType>PictureResourceButton</ValueType>
                 <WidthInRow>5</WidthInRow>
               </Parameter>
-              <Parameter>
-                <Name>InstallButton</Name>
-                <Text>Download and install</Text>
-                <EventId>INSTALL</EventId>
-                <Value>8522</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginStates[$list_row] == 0</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
-              <Parameter>
-                <Name>CheckForUpdatesButton</Name>
-                <Text>Check for updates</Text>
-                <EventId>CHECK_FOR_UPDATES</EventId>
-                <Value>14057</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginHasGitHubRepo[$list_row] and PluginStates[$list_row] == 1</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
-              <Parameter>
-                <Name>UpdateButton</Name>
-                <Text>Update the plugin</Text>
-                <EventId>UPDATE</EventId>
-                <Value>8519</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginStates[$list_row] == 2</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
-              <Parameter>
-                <Name>UpToDateButton</Name>
-                <Text>Plugin is up to date</Text>
-                <EventId>0</EventId>
-                <Value>11433</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Enable>False</Enable>
-                <Visible>PluginStates[$list_row] == 3</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
-              <Parameter>
-                <Name>UninstallButton</Name>
-                <Text>Uninstall this plugin</Text>
-                <EventId>UNINSTALL</EventId>
-                <Value>10051</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginStates[$list_row] != 0</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
             </Parameters>
-
           </Parameter>
-
           <Parameter>
             <Name>DescriptionRow</Name>
             <Text>Bar</Text>
@@ -177,8 +129,8 @@
           <Parameter>
             <Name>PluginUUID</Name>
             <Text>UUID</Text>
-            <Value> </Value>
-            <ValueType>Text</ValueType>
+            <Value/>
+            <ValueType>String</ValueType>
             <Visible>False</Visible>
           </Parameter>
           <Parameter>
@@ -207,6 +159,59 @@
             <Value> </Value>
             <ValueType>Text</ValueType>
             <Visible>InstallLocation</Visible>
+          </Parameter>
+          <Parameter>
+            <Name>Separator</Name>
+            <Text/>
+            <ValueType>Separator</ValueType>
+          </Parameter>
+          <Parameter>
+            <Name>ActionsRow</Name>
+            <Text> </Text>
+            <ValueType>Row</ValueType>
+            <Parameters>
+              <Parameter>
+                <Name>InstallButton</Name>
+                <Text>Download and install</Text>
+                <EventId>INSTALL</EventId>
+                <Value>8522</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus == 0</Visible>
+              </Parameter>
+              <Parameter>
+                <Name>CheckForUpdatesButton</Name>
+                <Text>Check for updates</Text>
+                <EventId>CHECK_FOR_UPDATES</EventId>
+                <Value>14057</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus == 1</Visible>
+              </Parameter>
+              <Parameter>
+                <Name>UpdateButton</Name>
+                <Text>Update the plugin</Text>
+                <EventId>UPDATE</EventId>
+                <Value>8519</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus == 2</Visible>
+              </Parameter>
+              <Parameter>
+                <Name>UpToDateButton</Name>
+                <Text>Plugin is up to date</Text>
+                <EventId>0</EventId>
+                <Value>11433</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus == 3</Visible>
+                <Enable>False</Enable>
+              </Parameter>
+              <Parameter>
+                <Name>UninstallButton</Name>
+                <Text>Uninstall this plugin</Text>
+                <EventId>UNINSTALL</EventId>
+                <Value>10051</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus != 0</Visible>
+              </Parameter>
+            </Parameters>
           </Parameter>
         </Parameters>
       </Parameter>
@@ -283,9 +288,9 @@
     <Text></Text>
     <Parameters>
       <Parameter>
-        <Name>PluginStates</Name>
+        <Name>PluginStatus</Name>
         <Text />
-        <Value>[_]</Value>
+        <Value>0</Value>
         <ValueType>Integer</ValueType>
       </Parameter>
       <Parameter>
