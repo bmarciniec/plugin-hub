@@ -5,19 +5,19 @@ import unittest
 
 from unittest.mock import patch
 
-from PythonPartsScripts.PluginManager.allep import AllepPackage
-from PythonPartsScripts.PluginManager.releases import Release, Releases
-from PythonPartsScripts.PluginManager.site_libraries.packaging import specifiers, version
+from PluginManager.allep import AllepPackage
+from PluginManager.releases import Release, Releases
+from PluginManager.site_libraries.packaging import specifiers, version
 
 
 class TestRelease(unittest.TestCase):
 
     def setUp(self):
         with open("tests/test_data/releases.json") as f:
-            self.releases = json.load(f)
+            self.releases_data = json.load(f)
 
     def test_from_github(self):
-        release = Release.from_github_data(self.releases[1])
+        release = Release.from_github_data(self.releases_data[1])
         self.assertEqual(release.version.major, 1)
         self.assertEqual(release.version.minor, 0)
         self.assertEqual(release.published_at.date(), datetime.date(2023, 2, 1))
@@ -27,13 +27,13 @@ class TestRelease(unittest.TestCase):
         self.assertEqual(release.allep_package.name, "plugin.allep")
 
     def test_from_github_no_assets(self):
-        release = self.releases[1]
+        release = self.releases_data[1]
         release["assets"] = []
         with self.assertRaises(ValueError):
             Release.from_github_data(release)
 
     def test_from_github_no_allep_package(self):
-        release = self.releases[2]
+        release = self.releases_data[2]
         release["assets"][0]["name"] = "plugin.zip"
         with self.assertRaises(ValueError):
             Release.from_github_data(release)
