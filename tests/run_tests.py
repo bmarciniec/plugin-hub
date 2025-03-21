@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
         suite = unittest.TestSuite()
 
-        for test_name in ("plugins_collection", "releases"):
+        for test_name in ("plugins_collection", "releases", "plugin"):
             test_module = importlib.import_module(f'tests.test_{test_name}')
             suite.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_module))
 
