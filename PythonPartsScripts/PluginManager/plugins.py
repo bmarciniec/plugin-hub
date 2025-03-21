@@ -16,13 +16,13 @@ import requests
 
 from BuildingElement import BuildingElement
 from FileNameService import FileNameService
+from packaging.specifiers import SpecifierSet
+from packaging.version import Version
 
 from . import config
 from .developers import Developer, DeveloperIndex
 from .installer import AllepInstaller
 from .releases import Release, Releases
-from .site_libraries.packaging.specifiers import SpecifierSet
-from .site_libraries.packaging.version import Version
 from .util import date_to_str, delete_folder, make_step_progress_bar, remove_directory
 from .yaml_models import sanitize_strings
 

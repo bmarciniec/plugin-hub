@@ -13,6 +13,7 @@ CODELINE = "MAIN_VisualEditor"
 
 def add_python_paths():
     # Read the registry values
+
     key_path = f"SOFTWARE\\NEMETSCHEK\\{CODELINE}\\{str(ALLPLAN_VERSION)}\\InstallRoot"
     key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path)
 
@@ -31,6 +32,7 @@ def add_python_paths():
     sys.path.append(str(etc_path / Path("PythonPartsFramework")))
     sys.path.append(str(etc_path / Path("PythonPartsFramework\\GeneralScripts")))
     sys.path.append(str(etc_path / Path("PythonPartsScripts")))
+    sys.path.append(str(etc_path / Path("PythonParts-site-packages")))
     sys.path.append(str(prg_path))
 
 if __name__ == '__main__':

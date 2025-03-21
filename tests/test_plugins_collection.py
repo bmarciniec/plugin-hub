@@ -3,9 +3,9 @@ import unittest
 from unittest.mock import patch
 from uuid import UUID
 
+from packaging.specifiers import SpecifierSet
+from packaging.version import Version
 from PluginManager.plugins import Plugin, PluginsCollection, PluginStatus
-from PluginManager.site_libraries.packaging.specifiers import SpecifierSet
-from PluginManager.site_libraries.packaging.version import Version
 
 from tests.mocks import mocked_requests_get
 

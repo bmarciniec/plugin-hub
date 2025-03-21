@@ -5,9 +5,9 @@ import unittest
 
 from unittest.mock import patch
 
+from packaging import specifiers, version
 from PluginManager.allep import AllepPackage
 from PluginManager.releases import Release, Releases
-from PluginManager.site_libraries.packaging import specifiers, version
 
 
 class TestRelease(unittest.TestCase):

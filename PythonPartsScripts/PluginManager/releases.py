@@ -8,9 +8,10 @@ from typing import Self
 
 import requests
 
+from packaging import specifiers, version
+
 from . import config
 from .allep import AllepPackage
-from .site_libraries.packaging import specifiers, version
 
 
 @dataclass
