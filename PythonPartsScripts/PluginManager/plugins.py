@@ -43,7 +43,11 @@ class PluginsCollection:
         self._sorted_uuids: list[UUID] = []
         """List of UUIDs in the alphabetical order of the plugins."""
 
-        self.developers = DeveloperIndex.from_github()
+        try:
+            self.developers = DeveloperIndex.from_github()
+        except requests.exceptions.ConnectionError:
+            self.developers = DeveloperIndex()
+
 
     def append(self, new_plugin: Plugin):
         """Append a new plugin to the collection.
