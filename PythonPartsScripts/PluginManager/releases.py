@@ -140,6 +140,22 @@ class Releases(set):
         self.add(latest_release)
         return latest_release
 
+    def get_from_github(self, owner: str, repo: str):
+        """Populate this set with data from GitHub
+
+        Args:
+            owner: The owner of the repository.
+            repo: The name of the repository.
+        """
+        url = f"https://api.github.com/repos/{owner}/{repo}/releases"
+
+        response = requests.get(url, timeout=10, headers=config.GITHUB_API_HEADERS)
+        response.raise_for_status()
+        releases = response.json()
+
+        for release_data in releases:
+            self.add(Release.from_github_data(release_data))
+
     @staticmethod
     def _get_latest_from_github(owner: str, repo: str) -> Release:
         """Send a request to GitHub API to get the latest release of the plugin.

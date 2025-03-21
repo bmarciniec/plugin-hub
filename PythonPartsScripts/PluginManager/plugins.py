@@ -191,7 +191,7 @@ class Plugin:
 
     # Optional attributes
     description       : str                     = ""
-    github            : dict | None             = field(default=None)
+    github            : dict[str,str] | None             = field(default=None)
     installed_date    : datetime | None         = field(default=None)
     installed_files   : set[Path]               = field(default_factory=set)
     installed_version : Version | None          = field(default=None)
@@ -223,6 +223,15 @@ class Plugin:
 
                 if absolute_path.exists() and absolute_path.is_file():
                     self.installed_files.add(absolute_path)
+
+    def check_releases(self):
+        """Get the available releases from GitHub
+        """
+        if not self.has_github:
+            return False
+
+        self._releases.get_from_github(**self.github)
+        self._last_version_check = datetime.now()
 
     @classmethod
     def from_github_data(cls, data: dict) -> Plugin:
@@ -265,17 +274,6 @@ class Plugin:
             location          = location
         )
 
-    def _get_all_releases(self):
-        """Get the releases of the plugin from the GitHub repository."""
-        url = f"https://api.github.com/repos/{self.github["owner"]}/{self.github["repo"]}/releases"
-
-        response = requests.get(url, timeout=10, headers=config.GITHUB_API_HEADERS)
-        response.raise_for_status()
-        releases = response.json()
-
-        for release_data in releases:
-            self._releases.add(Release.from_github_data(release_data))
-
     def install(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """Install the plugin from GitHub
 
@@ -287,7 +285,7 @@ class Plugin:
         """
 
         if not self._releases:
-            self._get_all_releases()
+            self._releases.get_from_github(**self.github)
 
         if self.latest_compatible_release is None:
             raise RuntimeError("Cannot install this plugin, as no release compatible with this Allplan version was found")
@@ -444,6 +442,9 @@ class Plugin:
         if not self.has_github:
             raise RuntimeError("Cannot get the latest version of the plugin because there is no GitHub repository attached.")
 
+        if not self._releases:
+            raise RuntimeError("No data about available releases. Call check_releases() first!")
+
         # when no compatibility is set, get the release marked in GitHub as latest
         if not self.compatibility:
             return self._releases.get_latest(self.github["owner"], self.github["repo"])
@@ -459,7 +460,7 @@ class Plugin:
             Releases: Releases of the plugin.
         """
         if self.has_github and not self._releases:
-            self._get_all_releases()
+            raise RuntimeError("No data about available releases. Call check_releases() first!")
 
         if self.compatibility is not None:
             return self._releases.get_matching(self.compatibility, True)
@@ -476,11 +477,10 @@ class Plugin:
         if self.installed_version is None:
             return PluginStatus.NOT_INSTALLED
 
-        if not self.has_github:
+        if not self.has_github or not self._releases:
             return PluginStatus.INSTALLED
 
-        latest_compatible = self.latest_compatible_release
-        if latest_compatible is None:
+        if (latest_compatible := self.latest_compatible_release) is None:
             return PluginStatus.INSTALLED
 
         if self.installed_version < latest_compatible.version:
