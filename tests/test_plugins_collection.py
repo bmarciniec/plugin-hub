@@ -67,6 +67,9 @@ class TestPluginsCollection(unittest.TestCase):
         plugin = self.plugins_collection[UUID("e7d3e8e2-8b2d-4d8d-8b2d-4d8d8b2d4d8d")]
         self.assertEqual(plugin.name, "Example Plugin 3")
         self.assertIsNone(plugin.compatibility)
+
+        plugin.check_releases()
+
         self.assertEqual(len(plugin.releases), 6)
         self.assertEqual(plugin.latest_compatible_release.version, Version("2.1.6"))
 
@@ -80,6 +83,9 @@ class TestPluginsCollection(unittest.TestCase):
         self.assertEqual(plugin.name, "Example Plugin 4")
         self.assertEqual(plugin.developer.id, "example-developer")
         self.assertEqual(plugin.compatibility, SpecifierSet("~=1.0"))
+
+        plugin.check_releases()
+
         self.assertEqual(len(plugin.releases), 3)
         self.assertEqual(plugin.latest_compatible_release.version, Version("1.1.0"))
 
@@ -102,6 +108,10 @@ class TestPluginsCollection(unittest.TestCase):
              "Example Plugin 3",
              "Example Plugin 4",
              "Plugin not registered on GitHub"])
+
+        # before checking the status, get releases from GitHub
+        for plugin in self.plugins_collection:
+            plugin.check_releases()
 
         self.assertListEqual(
             list(plugin.status for plugin in self.plugins_collection),
@@ -136,6 +146,10 @@ class TestPluginsCollection(unittest.TestCase):
              "Example Plugin 4"])
 
         self.assertTrue(all(plugin.has_github for plugin in self.plugins_collection))
+
+        for plugin in self.plugins_collection:
+            plugin.check_releases()
+
         self.assertTrue(all(plugin.latest_compatible_release is not None for plugin in self.plugins_collection))
         self.assertListEqual(
             list(plugin.latest_compatible_release.version for plugin in self.plugins_collection),

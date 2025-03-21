@@ -63,6 +63,9 @@ class TestPlugin(unittest.TestCase):
 
         self.assertTrue(self.plugin_from_github.has_github)
         self.assertIsInstance(self.plugin_from_github.compatibility, SpecifierSet)
+
+        self.plugin_from_github.check_releases()
+
         self.assertIsNotNone(self.plugin_from_github.latest_compatible_release)
         self.assertEqual(self.plugin_from_github.latest_compatible_release.version, Version("1.1.0"))
         self.assertFalse(self.plugin_from_github.is_on_actionbar)
@@ -104,6 +107,8 @@ class TestPlugin(unittest.TestCase):
         self.assertEqual(len(self.installed_plugin.installed_files), 7)
         self.assertTrue(self.plugin_from_github.is_on_actionbar)
         self.assertTrue(self.plugin_from_github.has_github)
+
+        self.plugin_from_github.check_releases()
 
         self.assertIsNotNone(self.plugin_from_github.latest_compatible_release)
         self.assertEqual(self.plugin_from_github.latest_compatible_release.version, Version("1.1.0"))
