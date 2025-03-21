@@ -86,7 +86,19 @@ class PluginManagerScript(BaseScriptObject):
         if 1500 < action_id < 2000:   # when button was clicked on the detail page
             plugin = self.plugins[UUID(self.build_ele.PluginUUID.value)]
         else:                   # when button was clicked on the overview page
-            plugin = self.plugins[plugin_index]
+            installed_plugins = [plugin for plugin in self.plugins if plugin.status != PluginStatus.NOT_INSTALLED]
+            available_plugins = [plugin for plugin in self.plugins if plugin.status == PluginStatus.NOT_INSTALLED]
+
+            if action_id == self.build_ele.SHOW_DETAILS_AVAILABLE_PLUGIN:
+                plugin = available_plugins[plugin_index]
+            elif action_id == self.build_ele.SHOW_DETAILS_INSTALLED_PLUGIN:
+                plugin = installed_plugins[plugin_index]
+
+        if action_id in (self.build_ele.SHOW_DETAILS_AVAILABLE_PLUGIN, self.build_ele.SHOW_DETAILS_INSTALLED_PLUGIN):
+            plugin.update_plugin_details_on_palette(self.build_ele)
+            self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_DETAILS
+            return True
+
 
         match action_id:
             case self.build_ele.INSTALL:
@@ -103,11 +115,6 @@ class PluginManagerScript(BaseScriptObject):
                     plugin.install(progress_bar)
 
                 plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
-                return True
-
-            case self.build_ele.SHOW_DETAILS:
-                plugin.update_plugin_details_on_palette(self.build_ele)
-                self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_DETAILS
                 return True
 
             case self.build_ele.GO_TO_HOMEPAGE:

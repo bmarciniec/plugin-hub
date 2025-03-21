@@ -111,9 +111,14 @@ class PluginsCollection:
         if only_status:
             return
 
-        build_ele.PluginNames.value         = [plgn.name for plgn in self]
-        build_ele.PluginDescriptions.value  = [plgn.description for plgn in self]
-        build_ele.PluginHasGitHubRepo.value = [plgn.has_github for plgn in self]
+        # fill the palette with installed plugins
+        build_ele.InstalledPluginNames.value         = [plgn.name for plgn in self if plgn.status != PluginStatus.NOT_INSTALLED]
+        build_ele.InstalledPluginDescriptions.value  = [plgn.description for plgn in self if plgn.status != PluginStatus.NOT_INSTALLED]
+
+        # fill the palette with not installed plugins
+        build_ele.AvailablePluginNames.value         = [plgn.name for plgn in self if plgn.status == PluginStatus.NOT_INSTALLED]
+        build_ele.AvailablePluginDescriptions.value  = [plgn.description for plgn in self if plgn.status == PluginStatus.NOT_INSTALLED]
+
 
     def clean_up(self):
         """Remove the plugins from the collection, that are not installed and don't have a GitHub repository."""
