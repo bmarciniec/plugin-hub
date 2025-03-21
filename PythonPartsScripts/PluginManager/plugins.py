@@ -72,7 +72,7 @@ class PluginsCollection:
         plugin_list = response.json()
 
         for plugin_dict in plugin_list:
-            # Check if the developer is in the developer index
+            # If the developer is not in the developer index, skip the plugin
             try:
                 plugin_dict["developer"] = self.developers[plugin_dict["developer"]]
             except KeyError:
@@ -256,7 +256,7 @@ class Plugin:
             Plugin: Plugin object created from the data.
         """
         return cls(
-            uuid              = data["UUID"],
+            uuid              = UUID(data["UUID"]),
             name              = data["pluginName"],
             developer         = Developer(data["developerName"]),
             installed_date    = datetime.fromisoformat(data["createdOn"]),
@@ -449,10 +449,10 @@ class Plugin:
             return self._releases.get_latest(self.github["owner"], self.github["repo"])
 
         # get the latest release that is compatible with the current version of Allplan
-        return self._releases.get_latest_matching(self.compatibility)
+        return self.releases.get_latest_matching(self.compatibility)
 
     @property
-    def releases(self) -> set[Release]:
+    def releases(self) -> Releases:
         """Get a subset of all releases (also pre-releases), that are compatible with the current ALLPLAN version
 
         Returns:
@@ -480,6 +480,8 @@ class Plugin:
             return PluginStatus.INSTALLED
 
         latest_compatible = self.latest_compatible_release
+        if latest_compatible is None:
+            return PluginStatus.INSTALLED
 
         if self.installed_version < latest_compatible.version:
             return PluginStatus.UPDATE_AVAILABLE

@@ -83,7 +83,7 @@ class Releases(set):
             raise ValueError("Only Release objects can be added to the set of releases.")
         super().add(release)
 
-    def get_matching(self, specifier: specifiers.SpecifierSet, include_prerelease: bool = False) -> set[Release]:
+    def get_matching(self, specifier: specifiers.SpecifierSet, include_prerelease: bool = False) -> Self:
         """Get all the releases compatible with the given specifier.
 
         Args:
@@ -93,7 +93,8 @@ class Releases(set):
         Returns:
             Set of releases compatible with the given specifier.
         """
-        return set(release for release in self if specifier.contains(release.version) and (include_prerelease or not release.is_prerelease))
+
+        return self.__class__(release for release in self if specifier.contains(release.version) and (include_prerelease or not release.is_prerelease))
 
     def get_latest_matching(self, specifier: specifiers.SpecifierSet) -> Release | None:
         """Get the latest release matching given specifier.
@@ -121,8 +122,9 @@ class Releases(set):
             The latest release from the set of releases.
         """
         # If there is already a release marked as latest, return it
-        if latest_release := next(release for release in self if release.latest):
-            return latest_release
+        if latest_release := next((release for release in self if release.latest), None):
+            if latest_release is not None:
+                return latest_release
 
         # Otherwise, get the latest release from GitHub
         latest_release = self._get_latest_from_github(owner, repo)
