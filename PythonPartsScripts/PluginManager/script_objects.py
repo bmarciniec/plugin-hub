@@ -10,6 +10,7 @@ import NemAll_Python_Utility as AllplanUtil
 from BaseScriptObject import BaseScriptObject, BaseScriptObjectData
 from BuildingElement import BuildingElement
 from CreateElementResult import CreateElementResult
+from requests.exceptions import ConnectionError
 from ScriptObjectInteractors.OnCancelFunctionResult import OnCancelFunctionResult
 
 from .allep import AllepPackage
@@ -54,7 +55,12 @@ class PluginManagerScript(BaseScriptObject):
 
         # Get the plugins from the GitHub repository sorted by name
         self.plugins = PluginsCollection()
-        self.plugins.get_plugins_from_github()
+
+        try:
+            self.plugins.get_plugins_from_github()
+        except ConnectionError:
+            pass
+
         self.plugins.get_installed_plugins()
         self.plugins.update_building_element(self.build_ele)
 
@@ -114,7 +120,7 @@ class PluginManagerScript(BaseScriptObject):
                     AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_OK)
 
                 elif plugin.status == PluginStatus.UPDATE_AVAILABLE:
-                    msg = f"New version {plugin.latest_version} is available. Do you want to proceed with the update?"
+                    msg = f"New version {plugin.latest_compatible_release} is available. Do you want to proceed with the update?"
 
                     if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDYES:
                         progress_bar = AllplanUtil.ProgressBar(180, 0, False)
@@ -133,7 +139,7 @@ class PluginManagerScript(BaseScriptObject):
                 return False
 
             case self.build_ele.UPDATE:
-                msg = f"You are about to update {plugin.name} from {plugin.installed_version} to {plugin.latest_version}.\nWould you like to Proceed?"
+                msg = f"You are about to update {plugin.name} from {plugin.installed_version} to {plugin.latest_compatible_release}.\nWould you like to Proceed?"
 
                 if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
                     return False
