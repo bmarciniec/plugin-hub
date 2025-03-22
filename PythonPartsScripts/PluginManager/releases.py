@@ -156,6 +156,20 @@ class Releases(set):
         for release_data in releases:
             self.add(Release.from_github_data(release_data))
 
+    def get_release_by_version(self, version: version.Version) -> Release | None:
+        """Get a release by version.
+
+        Args:
+            version: The version of the release.
+
+        Returns:
+            The release with the given version or None if not found.
+        """
+        for release in self:
+            if release.version == version:
+                return release
+        return None
+
     @staticmethod
     def _get_latest_from_github(owner: str, repo: str) -> Release:
         """Send a request to GitHub API to get the latest release of the plugin.

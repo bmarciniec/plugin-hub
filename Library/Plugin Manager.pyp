@@ -45,8 +45,18 @@
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>UNINSTALL</Name>
+      <Name>INSTALL_ANOTHER_VERSION</Name>
       <Value>1506</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>EXECUTE_INSTALL_ANOTHER_VERSION</Name>
+      <Value>1507</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>UNINSTALL</Name>
+      <Value>1508</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <!-- Palette states -->
@@ -278,12 +288,43 @@
                 <Enable>False</Enable>
               </Parameter>
               <Parameter>
+                <Name>InstallAnotherVersionButton</Name>
+                <Text>Install another version</Text>
+                <EventId>INSTALL_ANOTHER_VERSION</EventId>
+                <Value>16975</Value>  <!--11169;14065-->
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus != 0 and PluginHasGitHub</Visible>
+              </Parameter>
+              <Parameter>
                 <Name>UninstallButton</Name>
                 <Text>Uninstall this plugin</Text>
                 <EventId>UNINSTALL</EventId>
                 <Value>10051</Value>
                 <ValueType>PictureResourceButton</ValueType>
                 <Visible>PluginStatus != 0</Visible>
+              </Parameter>
+            </Parameters>
+          </Parameter>
+          <Parameter>
+            <Name>InstallAnotherVersionRow</Name>
+            <Text>Select version </Text>
+            <ValueType>Row</ValueType>
+            <Visible>False</Visible>
+            <Parameters>
+              <Parameter>
+                <Name>VersionsComboBox</Name>
+                <Text>VersionsComboBox</Text>
+                <Value/>
+                <ValueList/>
+                <ValueType>StringComboBox</ValueType>
+              </Parameter>
+              <Parameter>
+                <Name>ExecuteInstallAnotherVersionButton</Name>
+                <Text>Install</Text>
+                <EventId>EXECUTE_INSTALL_ANOTHER_VERSION</EventId>
+                <Value>8522</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <WidthInRow>10</WidthInRow>
               </Parameter>
             </Parameters>
           </Parameter>
@@ -366,6 +407,12 @@
         <Text />
         <Value>0</Value>
         <ValueType>Integer</ValueType>
+      </Parameter>
+      <Parameter>
+        <Name>PluginHasGitHub</Name>
+        <Text />
+        <Value>False</Value>
+        <ValueType>CheckBox</ValueType>
       </Parameter>
       <Parameter>
         <Name>CurrentPaletteState</Name>

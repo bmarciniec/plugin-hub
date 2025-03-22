@@ -7,6 +7,7 @@ import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntEnum, StrEnum
+from math import e
 from pathlib import Path
 from typing import cast
 from uuid import UUID
@@ -101,15 +102,13 @@ class PluginsCollection:
             for plugin_data in manifest["plugins"]:
                 self.append(Plugin.from_manifest_data(location, plugin_data))
 
-    def update_building_element(self, build_ele: BuildingElement, only_status: bool = False):
+    def update_building_element(self, build_ele: BuildingElement):
         """Populate the building element with the plugin information.
 
         Args:
             build_ele (BuildingElement): Building element to populate.
             only_status (bool): If True, only the status of the plugins is updated, otherwise all the plugin information is updated.
         """
-        if only_status:
-            return
 
         # fill the palette with installed plugins
         build_ele.InstalledPluginNames.value         = [plgn.name for plgn in self if plgn.status != PluginStatus.NOT_INSTALLED]
@@ -118,6 +117,10 @@ class PluginsCollection:
         # fill the palette with not installed plugins
         build_ele.AvailablePluginNames.value         = [plgn.name for plgn in self if plgn.status == PluginStatus.NOT_INSTALLED]
         build_ele.AvailablePluginDescriptions.value  = [plgn.description for plgn in self if plgn.status == PluginStatus.NOT_INSTALLED]
+
+        # palette does not show up if one of the lists is empty
+        for prop_name in ("InstalledPluginNames", "InstalledPluginDescriptions", "AvailablePluginNames", "AvailablePluginDescriptions"):
+            build_ele.get_existing_property(prop_name).value = build_ele.get_existing_property(prop_name).value or [" "]
 
 
     def clean_up(self):
@@ -277,7 +280,7 @@ class Plugin:
             location          = location
         )
 
-    def install(self, progress_bar: AllplanUtil.ProgressBar | None = None):
+    def install(self, progress_bar: AllplanUtil.ProgressBar | None = None, version: Version | None = None):
         """Install the plugin from GitHub
 
         Args:
@@ -290,13 +293,18 @@ class Plugin:
         if not self._releases:
             self._releases.get_from_github(**self.github)
 
-        if self.latest_compatible_release is None:
+        if version is not None:
+            release_to_install = self.releases.get_release_by_version(version)
+        else:
+            release_to_install = self.latest_compatible_release
+
+        if release_to_install is None:
             raise RuntimeError("Cannot install this plugin, as no release compatible with this Allplan version was found")
 
-        installer = AllepInstaller(self.latest_compatible_release.allep_package)
+        installer = AllepInstaller(release_to_install.allep_package)
         installer.download_and_install_package(progress_bar)
 
-        self.installed_version = self.latest_compatible_release.version
+        self.installed_version = release_to_install.version
         self.installed_date    = datetime.now()
 
     def fetch(self, another_plugin: Plugin):
@@ -324,6 +332,7 @@ class Plugin:
             control_props_util: Control properties utility to alter the visibility of the palette elements.
         """
         build_ele.PluginStatus.value = self.status
+        build_ele.PluginHasGitHub.value = self.has_github
 
         if only_status:
             return

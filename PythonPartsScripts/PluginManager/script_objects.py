@@ -10,6 +10,7 @@ import NemAll_Python_Utility as AllplanUtil
 from BaseScriptObject import BaseScriptObject, BaseScriptObjectData
 from BuildingElement import BuildingElement
 from CreateElementResult import CreateElementResult
+from packaging.version import Version
 from requests.exceptions import ConnectionError
 from ScriptObjectInteractors.OnCancelFunctionResult import OnCancelFunctionResult
 
@@ -144,6 +145,31 @@ class PluginManagerScript(BaseScriptObject):
                 plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
                 return True
 
+            case self.build_ele.INSTALL_ANOTHER_VERSION:
+                self.control_props_util.set_visible_condition("InstallAnotherVersionRow", "True")
+                plugin.check_releases()
+                versions = "|".join(str(release.version) for release in plugin.releases)
+                self.control_props_util.set_value_list("VersionsComboBox", versions)
+                return True
+
+            case self.build_ele.EXECUTE_INSTALL_ANOTHER_VERSION:
+                version = Version(self.build_ele.VersionsComboBox.value)
+
+                msg = f"You are about to install {plugin.name} version {version}.\nWould you like to proceed?"
+                if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
+                    return False
+
+                progress_bar = AllplanUtil.ProgressBar(270, 0, False) # 70 for uninstallation, 100 steps for download, 90 for installation, 10 margin
+
+                with notify_user(success_msg  = f"{plugin.name} version {version} installed successfully.",
+                                 error_msg    = "Installation failed.",
+                                 progress_bar = progress_bar):
+                    plugin.uninstall(progress_bar)
+                    plugin.install(progress_bar, version)
+
+                plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
+                return True
+
             case self.build_ele.EMAIL_TO_SUPPORT:
                 webbrowser.open(f"mailto:{plugin.developer.support.email}")
                 return False
@@ -178,7 +204,7 @@ class PluginManagerScript(BaseScriptObject):
                     plugin.uninstall(progress_bar)
 
                 self.plugins.clean_up()
-                self.plugins.update_building_element(self.build_ele, only_status=False)
+                self.plugins.update_building_element(self.build_ele)
                 self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_OVERVIEW
 
                 return True
@@ -192,6 +218,7 @@ class PluginManagerScript(BaseScriptObject):
             OnCancelFunctionResult: what should happen after the cancel event
         """
         if self.build_ele.CurrentPaletteState.value == self.build_ele.SHOW_DETAILS:
+            self.control_props_util.set_visible_condition("InstallAnotherVersionRow", "False")
             self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_OVERVIEW
             return OnCancelFunctionResult.CONTINUE_INPUT
 
