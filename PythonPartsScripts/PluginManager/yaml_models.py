@@ -125,9 +125,9 @@ class Installation(Base):
 
     target_location    : str           = Field(alias="target-location")
     py_packages        : (str | None ) = Field(alias="py-packages", default=None)
-    pythonpart_scripts : (str | None ) = Field(alias="PythonPartsScripts", default=None)
-    actionbar          : (str | None ) = Field(alias="PythonPartsActionbar", default=None)
-    library            : (str | None ) = Field(alias="Library", default=None)
+    pythonpart_scripts : (str | None ) = Field(alias="PythonPartsScripts", default="PythonPartsScripts")
+    actionbar          : (str | None ) = Field(alias="PythonPartsActionbar", default="PythonPartsActionbar")
+    library            : (str | None ) = Field(alias="Library", default="Library")
 
     def __init__(self, **kwargs):
         """init function

@@ -101,12 +101,6 @@ class CopyFiles(AppConfig):
 
 
         with ZipFile(path_to_allep, "r") as package:
-            directories = self.get_directories(package)
-            for key, value in folders.items():
-                if (val := getattr(self.installation, key, None)):
-
-                    if val and val not in directories:
-                        raise ValueError("Folder specified in the install config does not exist in the plugin")
 
             path = self.installation.get_path_function()
             for x, info in package.NameToInfo.items():
