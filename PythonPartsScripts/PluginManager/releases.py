@@ -44,7 +44,7 @@ class Release:
         allep_package = None
 
         for asset in assets:
-            if asset["name"].lower().endswith(".allep"):
+            if asset.get("name","").lower().endswith(".allep"):
                 allep_package = AllepPackage(
                     name = asset["name"],
                     url = asset["browser_download_url"],
