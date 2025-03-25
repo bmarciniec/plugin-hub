@@ -62,7 +62,7 @@ class PluginManagerScript(BaseScriptObject):
             pass
 
         self.plugins.get_installed_plugins()
-        self.plugins.update_building_element(self.build_ele)
+        self.plugins.update_plugins_overview_on_palette(self.build_ele)
 
     def execute(self) -> CreateElementResult:
         """Execute the element creation
@@ -204,7 +204,7 @@ class PluginManagerScript(BaseScriptObject):
                     plugin.uninstall(progress_bar)
 
                 self.plugins.clean_up()
-                self.plugins.update_building_element(self.build_ele)
+                self.plugins.update_plugins_overview_on_palette(self.build_ele)
                 self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_OVERVIEW
 
                 return True

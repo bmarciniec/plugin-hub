@@ -74,7 +74,7 @@
   <Page>
     <Name>InstalledPlugins</Name>
     <Text>Installed</Text>
-    <Visible>CurrentPaletteState == SHOW_OVERVIEW</Visible>
+    <Visible>CurrentPaletteState == SHOW_OVERVIEW and InstalledPluginNames != ["EMPTY"]</Visible>
     <Parameters>
       <Parameter>
         <Name>InstalledPluginListGroup</Name>
@@ -133,7 +133,7 @@
   <Page>
     <Name>AvailablePlugins</Name>
     <Text>Available</Text>
-    <Visible>CurrentPaletteState == SHOW_OVERVIEW</Visible>
+    <Visible>CurrentPaletteState == SHOW_OVERVIEW and AvailablePluginNames != ["EMPTY"]</Visible>
     <Parameters>
       <Parameter>
         <Name>AvailablePluginListGroup</Name>

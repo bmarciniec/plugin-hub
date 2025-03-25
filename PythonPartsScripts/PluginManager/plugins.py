@@ -102,7 +102,7 @@ class PluginsCollection:
             for plugin_data in manifest["plugins"]:
                 self.append(Plugin.from_manifest_data(location, plugin_data))
 
-    def update_building_element(self, build_ele: BuildingElement):
+    def update_plugins_overview_on_palette(self, build_ele: BuildingElement):
         """Populate the building element with the plugin information.
 
         Args:
@@ -120,7 +120,7 @@ class PluginsCollection:
 
         # palette does not show up if one of the lists is empty
         for prop_name in ("InstalledPluginNames", "InstalledPluginDescriptions", "AvailablePluginNames", "AvailablePluginDescriptions"):
-            build_ele.get_existing_property(prop_name).value = build_ele.get_existing_property(prop_name).value or [" "]
+            build_ele.get_existing_property(prop_name).value = build_ele.get_existing_property(prop_name).value or ["EMPTY"]
 
 
     def clean_up(self):
