@@ -72,127 +72,118 @@
     </Constant>
   </Constants>
   <Page>
-    <Name>PluginOverview</Name>
-    <Text>Plugin overview</Text>
+    <Name>InstalledPlugins</Name>
+    <Text>Installed</Text>
     <Visible>CurrentPaletteState == SHOW_OVERVIEW</Visible>
     <Parameters>
       <Parameter>
-        <Name>InstalledPluginsExpander</Name>
-        <Text>Installed plugins</Text>
-        <Value/>
-        <ValueType>Expander</ValueType>
+        <Name>InstalledPluginListGroup</Name>
+        <ValueType>ListGroup</ValueType>
         <Parameters>
           <Parameter>
-            <Name>InstalledPluginListGroup</Name>
-            <ValueType>ListGroup</ValueType>
+            <Name>InstalledPluginTitleRow</Name>
+            <Text>Foo</Text>
+            <ValueType>Row</ValueType>
+            <Value>OVERALL</Value>
             <Parameters>
               <Parameter>
-                <Name>InstalledPluginTitleRow</Name>
+                <Name>InstalledPluginNames</Name>
                 <Text>Foo</Text>
-                <ValueType>Row</ValueType>
-                <Value>OVERALL</Value>
-                <Parameters>
-                  <Parameter>
-                    <Name>InstalledPluginNames</Name>
-                    <Text>Foo</Text>
-                    <Orientation>Left</Orientation>
-                    <Value>[_]</Value>
-                    <ValueType>Text</ValueType>
-                    <FontFaceCode>1</FontFaceCode>
-                    <FontStyle>4</FontStyle>
-                  </Parameter>
-                  <Parameter>
-                    <Name>InstalledDetailsButton</Name>
-                    <Text>Show the plugin details</Text>
-                    <EventId>SHOW_DETAILS_INSTALLED_PLUGIN</EventId>
-                    <Value>AllplanSettings.PictResPalette.eHotinfo</Value>
-                    <ValueType>PictureResourceButton</ValueType>
-                    <WidthInRow>5</WidthInRow>
-                  </Parameter>
-                </Parameters>
+                <Orientation>Left</Orientation>
+                <Value>[_]</Value>
+                <ValueType>Text</ValueType>
+                <FontFaceCode>1</FontFaceCode>
+                <FontStyle>4</FontStyle>
               </Parameter>
               <Parameter>
-                <Name>InstalledPluginDescriptionRow</Name>
-                <Text>Bar</Text>
-                <ValueType>Row</ValueType>
-                <Value>OVERALL</Value>
-                <Parameters>
-                  <Parameter>
-                    <Name>InstalledPluginDescriptions</Name>
-                    <Text />
-                    <Value>[_]</Value>
-                    <ValueType>Text</ValueType>
-                    <Visible>InstalledPluginDescriptions[$list_row] != ""</Visible>
-                    <FontStyle>1</FontStyle>
-                  </Parameter>
-                </Parameters>
-              </Parameter>
-              <Parameter>
-                <Name>Separator</Name>
-                <ValueType>Separator</ValueType>
-                <Visible>$list_row != len(InstalledPluginNames) - 1 </Visible>
+                <Name>InstalledDetailsButton</Name>
+                <Text>Show the plugin details</Text>
+                <EventId>SHOW_DETAILS_INSTALLED_PLUGIN</EventId>
+                <Value>AllplanSettings.PictResPalette.eHotinfo</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <WidthInRow>5</WidthInRow>
               </Parameter>
             </Parameters>
           </Parameter>
-        </Parameters>
-      </Parameter>
-      <Parameter>
-        <Name>AvailablePluginsExpander</Name>
-        <Text>Available plugins</Text>
-        <Value>True</Value>
-        <ValueType>Expander</ValueType>
-        <Parameters>
           <Parameter>
-            <Name>AvailablePluginListGroup</Name>
-            <ValueType>ListGroup</ValueType>
+            <Name>InstalledPluginDescriptionRow</Name>
+            <Text>Bar</Text>
+            <ValueType>Row</ValueType>
+            <Value>OVERALL</Value>
             <Parameters>
               <Parameter>
-                <Name>AvailablePluginTitleRow</Name>
-                <Text>Foo</Text>
-                <ValueType>Row</ValueType>
-                <Value>OVERALL</Value>
-                <Parameters>
-                  <Parameter>
-                    <Name>AvailablePluginNames</Name>
-                    <Text>Foo</Text>
-                    <Orientation>Left</Orientation>
-                    <Value>[_]</Value>
-                    <ValueType>Text</ValueType>
-                    <FontFaceCode>1</FontFaceCode>
-                    <FontStyle>4</FontStyle>
-                  </Parameter>
-                  <Parameter>
-                    <Name>AvailableDetailsButton</Name>
-                    <Text>Show the plugin details</Text>
-                    <EventId>SHOW_DETAILS_AVAILABLE_PLUGIN</EventId>
-                    <Value>AllplanSettings.PictResPalette.eHotinfo</Value>
-                    <ValueType>PictureResourceButton</ValueType>
-                    <WidthInRow>5</WidthInRow>
-                  </Parameter>
-                </Parameters>
-              </Parameter>
-              <Parameter>
-                <Name>AvailablePluginDescriptionRow</Name>
-                <Text>Bar</Text>
-                <ValueType>Row</ValueType>
-                <Value>OVERALL</Value>
-                <Parameters>
-                  <Parameter>
-                    <Name>AvailablePluginDescriptions</Name>
-                    <Text />
-                    <Value>[_]</Value>
-                    <ValueType>Text</ValueType>
-                    <Visible>AvailablePluginDescriptions[$list_row] != ""</Visible>
-                    <FontStyle>1</FontStyle>
-                  </Parameter>
-                </Parameters>
-              </Parameter>
-              <Parameter>
-                <Name>Separator</Name>
-                <ValueType>Separator</ValueType>
-                <Visible>$list_row != len(AvailablePluginNames) - 1 </Visible>
+                <Name>InstalledPluginDescriptions</Name>
+                <Text />
+                <Value>[_]</Value>
+                <ValueType>Text</ValueType>
+                <Visible>InstalledPluginDescriptions[$list_row] != ""</Visible>
+                <FontStyle>1</FontStyle>
               </Parameter>
             </Parameters>
+          </Parameter>
+          <Parameter>
+            <Name>Separator</Name>
+            <ValueType>Separator</ValueType>
+            <Visible>$list_row != len(InstalledPluginNames) - 1 </Visible>
+          </Parameter>
+        </Parameters>
+      </Parameter>
+    </Parameters>
+  </Page>
+  <Page>
+    <Name>AvailablePlugins</Name>
+    <Text>Available</Text>
+    <Visible>CurrentPaletteState == SHOW_OVERVIEW</Visible>
+    <Parameters>
+      <Parameter>
+        <Name>AvailablePluginListGroup</Name>
+        <ValueType>ListGroup</ValueType>
+        <Parameters>
+          <Parameter>
+            <Name>AvailablePluginTitleRow</Name>
+            <Text>Foo</Text>
+            <ValueType>Row</ValueType>
+            <Value>OVERALL</Value>
+            <Parameters>
+              <Parameter>
+                <Name>AvailablePluginNames</Name>
+                <Text>Foo</Text>
+                <Orientation>Left</Orientation>
+                <Value>[_]</Value>
+                <ValueType>Text</ValueType>
+                <FontFaceCode>1</FontFaceCode>
+                <FontStyle>4</FontStyle>
+              </Parameter>
+              <Parameter>
+                <Name>AvailableDetailsButton</Name>
+                <Text>Show the plugin details</Text>
+                <EventId>SHOW_DETAILS_AVAILABLE_PLUGIN</EventId>
+                <Value>AllplanSettings.PictResPalette.eHotinfo</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <WidthInRow>5</WidthInRow>
+              </Parameter>
+            </Parameters>
+          </Parameter>
+          <Parameter>
+            <Name>AvailablePluginDescriptionRow</Name>
+            <Text>Bar</Text>
+            <ValueType>Row</ValueType>
+            <Value>OVERALL</Value>
+            <Parameters>
+              <Parameter>
+                <Name>AvailablePluginDescriptions</Name>
+                <Text />
+                <Value>[_]</Value>
+                <ValueType>Text</ValueType>
+                <Visible>AvailablePluginDescriptions[$list_row] != ""</Visible>
+                <FontStyle>1</FontStyle>
+              </Parameter>
+            </Parameters>
+          </Parameter>
+          <Parameter>
+            <Name>Separator</Name>
+            <ValueType>Separator</ValueType>
+            <Visible>$list_row != len(AvailablePluginNames) - 1 </Visible>
           </Parameter>
         </Parameters>
       </Parameter>
