@@ -56,6 +56,7 @@ class PluginManagerScript(BaseScriptObject):
 
         # Get the plugins from the GitHub repository sorted by name
         self.plugins = PluginsCollection()
+
         try:
             self.plugins.get_plugins_from_github()
         except ConnectionError:

@@ -206,7 +206,7 @@ class Plugin:
 
     # Internal attributes
     _last_version_check : datetime | None     = field(init=False, default=None, repr=False, compare=False)
-    _releases           : Releases            = field(init=False, default_factory=Releases)
+    _releases           : Releases            = field(init=False, default=Releases())
 
     def __post_init__(self):
         """Post initialization of the Plugin object."""

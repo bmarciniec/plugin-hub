@@ -1,7 +1,6 @@
 """This module contains the Release and Releases classes."""
-import re
 
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Self
@@ -45,7 +44,7 @@ class Release:
         allep_package = None
 
         for asset in assets:
-            if asset["name"].lower().endswith(".allep"):
+            if asset.get("name","").lower().endswith(".allep"):
                 allep_package = AllepPackage(
                     name = asset["name"],
                     url = asset["browser_download_url"],
@@ -67,9 +66,23 @@ class Release:
         """Return the hash of the release."""
         return hash(self.version)
 
+    def __eq__(self, other: object) -> bool:
+        """Check if two Release objects are equal based on their version."""
+        if not isinstance(other, Release):
+            return NotImplemented
+        return self.version == other.version
 
-class Releases(set):
+
+class Releases:
     """A set of releases of a plugin."""
+
+    def __init__(self, iterable: Iterable[Release] | None = None) -> None:
+        """Initialize the set of releases.
+
+        Args:
+            iterable: An iterable of Release objects.
+        """
+        self.__releases = set(iterable) if iterable is not None else set()
 
     def add(self, release:Release):
         """Add a release to the set of releases.
@@ -82,7 +95,8 @@ class Releases(set):
         """
         if not isinstance(release, Release):
             raise ValueError("Only Release objects can be added to the set of releases.")
-        super().add(release)
+
+        self.__releases.add(release)
 
     def get_matching(self, specifier: specifiers.SpecifierSet, include_prerelease: bool = False) -> Self:
         """Get all the releases compatible with the given specifier.
@@ -94,13 +108,13 @@ class Releases(set):
         Returns:
             Set of releases compatible with the given specifier.
         """
-
-        return self.__class__(release for release in self if specifier.contains(release.version) and (include_prerelease or not release.is_prerelease))
+        is_release_matching = lambda release: specifier.contains(release.version) and (include_prerelease or not release.is_prerelease)
+        return self.__class__(filter(is_release_matching, self.__releases))
 
     def get_latest_matching(self, specifier: specifiers.SpecifierSet) -> Release | None:
         """Get the latest release matching given specifier.
 
-        Prerelseases are ignored
+        Prereleases are ignored
 
         Args:
             specifier: The version specifier match the version with.
@@ -191,4 +205,12 @@ class Releases(set):
 
     def __iter__(self) -> Iterator[Release]:
         """Return an iterator over the releases."""
-        return super().__iter__()
+        yield from self.__releases
+
+    def __contains__(self, release: Release) -> bool:
+        """Check if the set of releases contains the given release."""
+        return release in self.__releases
+
+    def __len__(self) -> int:
+        """Return the number of releases."""
+        return len(self.__releases)
