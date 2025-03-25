@@ -268,7 +268,7 @@
                 <EventId>CHECK_FOR_UPDATES</EventId>
                 <Value>14057</Value>
                 <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginStatus == 1</Visible>
+                <Visible>PluginStatus == 1 and PluginHasGitHub</Visible>
               </Parameter>
               <Parameter>
                 <Name>UpdateButton</Name>
@@ -276,7 +276,7 @@
                 <EventId>UPDATE</EventId>
                 <Value>8519</Value>
                 <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginStatus == 2</Visible>
+                <Visible>PluginStatus == 2 and PluginHasGitHub</Visible>
               </Parameter>
               <Parameter>
                 <Name>UpToDateButton</Name>
@@ -284,7 +284,7 @@
                 <EventId>0</EventId>
                 <Value>11433</Value>
                 <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginStatus == 3</Visible>
+                <Visible>PluginStatus == 3 and PluginHasGitHub</Visible>
                 <Enable>False</Enable>
               </Parameter>
               <Parameter>
