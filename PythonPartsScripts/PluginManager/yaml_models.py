@@ -174,7 +174,7 @@ class Installation(Base):
             str: Full path of allep plugins.
         """
 
-        return f"{self.get_path_function()}PythonPartsActionbar\\AllepPlugins"
+        return f"{self.get_path_function()}PythonPartsActionbar"
 
     def install_pypackages(self, require_file: (str | None) = None):
         """Install packages from py_packages
