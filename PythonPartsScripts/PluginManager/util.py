@@ -176,6 +176,9 @@ def notify_user(success_msg: str|None, error_msg: str, progress_bar: AllplanUtil
             AllplanUtil.ShowMessageBox(f"{error_msg}\n{err}", AllplanUtil.MB_OK)
             raise
 
+        finally:
+            close_progress_bar(progress_bar)
+
         if success_msg is None:
             return
 
@@ -184,7 +187,6 @@ def notify_user(success_msg: str|None, error_msg: str, progress_bar: AllplanUtil
         for i, warning in enumerate(wrng):
             success_msg += f"\n{i}. {warning.message}"
 
-        close_progress_bar(progress_bar)
         AllplanUtil.ShowMessageBox(success_msg, AllplanUtil.MB_OK)
 
 def remove_directory(path: str):
