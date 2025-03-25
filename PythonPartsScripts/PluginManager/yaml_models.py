@@ -264,7 +264,7 @@ class AppConfig(Base):
 
         """
 
-        return f"{self.installation.get_install_location()}\\{self.plugin.UUID}"
+        return f"{self.installation.get_install_location()}"
 
     def _create_string_table(self, node: ET.Element, language: str) -> ET.Element:
         """Create a string table.
@@ -443,7 +443,7 @@ class AppConfig(Base):
 
             os.makedirs(f"{self.installation.get_install_location()}", exist_ok=True)
 
-            with open(f"{self.get_file_location()}.npd", "wb") as node_file:
+            with open(f"{self.get_file_location()}\\{self.plugin.UUID}.npd", "wb") as node_file:
                 node_file.write(DOCTYPE.encode("utf8"))
                 tree_node.write(node_file, "utf-8")
 
@@ -452,7 +452,7 @@ class AppConfig(Base):
             node      = self.create_actb_file()
             tree_node = ET.ElementTree(node)
 
-            with open(f"{self.get_file_location()}.actb", "wb") as node_file:
+            with open(f"{self.get_file_location()}\\{self.plugin.UUID}.actb", "wb") as node_file:
                 node_file.write(DOCTYPE_ACTB.encode("utf8"))
                 tree_node.write(node_file, 'utf-8')
 
