@@ -62,6 +62,26 @@ class Release:
             allep_package = allep_package
         )
 
+    @property
+    def published_ago(self) -> str:
+        """Return string since the release was published.
+
+        Returns:
+            A string representing the time since the release was published, like "2 wks ago".
+        """
+        delta = datetime.now() - self.published_at
+        days = delta.days
+
+        if days < 30:
+            weeks = days // 7
+            return f"{weeks} wk{'s' if weeks != 1 else ''} ago"
+        elif days < 365:
+            months = days // 30
+            return f"{months} mo ago"
+        else:
+            years = days // 365
+            return f"{years} yr{'s' if years != 1 else ''} ago"
+
     def __hash__(self) -> int:
         """Return the hash of the release."""
         return hash(self.version)

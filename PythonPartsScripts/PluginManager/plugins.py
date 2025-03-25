@@ -15,9 +15,11 @@ import NemAll_Python_Utility as AllplanUtil
 import requests
 
 from BuildingElement import BuildingElement
+from ControlPropertiesUtil import ControlPropertiesUtil
 from FileNameService import FileNameService
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
+from ParameterProperty import ParameterProperty
 
 from . import config
 from .developers import Developer, DeveloperIndex
@@ -206,7 +208,7 @@ class Plugin:
 
     # Internal attributes
     _last_version_check : datetime | None     = field(init=False, default=None, repr=False, compare=False)
-    _releases           : Releases            = field(init=False, default=Releases())
+    _releases           : Releases            = field(init=False, default_factory=Releases)
 
     def __post_init__(self):
         """Post initialization of the Plugin object."""
@@ -229,22 +231,22 @@ class Plugin:
                 if absolute_path.exists() and absolute_path.is_file():
                     self.installed_files.add(absolute_path)
 
-    def check_releases(self, progess_bar: AllplanUtil.ProgressBar | None = None):
+    def check_releases(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """Get the available releases from GitHub
 
         Args:
             progress_bar: Instance of progress_bar. When provided, it will be increased by 10 steps.
         """
         if not self.has_github:
-            return False
+            return
 
-        if progess_bar is not None:
-            progess_bar.SetTitle(f"Checking {self.name}...")
+        if progress_bar is not None:
+            progress_bar.SetTitle(f"Checking {self.name}...")
 
         self._releases.get_from_github(**self.github)
 
-        if progess_bar is not None:
-            progess_bar.MakeStep(19)
+        if progress_bar is not None:
+            progress_bar.MakeStep(19)
 
         self._last_version_check = datetime.now()
 
@@ -432,6 +434,32 @@ class Plugin:
         self.location = None
 
         make_step_progress_bar(10, "Completed", progress_bar)
+
+    def fill_versions_combo_box(self, param: ParameterProperty, control_props_util: ControlPropertiesUtil):
+        """Fill the combo box with the available versions of the plugin.
+
+        Args:
+            param: Parameter property representing the combobox to fill.
+            control_props_util: Control properties utility to alter the combobox entries.
+        """
+        combo_box_entries = []
+        selected_entry = ""
+
+        for release in self.releases:
+            combo_box_entry = f"{str(release.version)} ({release.published_ago}"
+
+            if self.latest_compatible_release is not None and release.version == self.latest_compatible_release.version:
+                combo_box_entry += ", latest"
+
+            combo_box_entry += ")"
+
+            if self.installed_version and release.version == self.installed_version:
+                selected_entry = combo_box_entry
+
+            combo_box_entries.append(combo_box_entry)
+
+        control_props_util.set_value_list(param.name, "|".join(combo_box_entries))
+        param.value = selected_entry
 
     @property
     def has_github(self) -> bool:

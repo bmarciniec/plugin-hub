@@ -1,4 +1,5 @@
 """Module with the script object handling the workflow of the plugin hub"""
+import re
 import sys
 import webbrowser
 
@@ -105,6 +106,7 @@ class PluginManagerScript(BaseScriptObject):
         match action_id:
             case self.build_ele.INSTALL:
                 msg = f"You are about to install {plugin.name}.\nWould you like to proceed?"
+
                 if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
                     return False
 
@@ -176,31 +178,42 @@ class PluginManagerScript(BaseScriptObject):
                 if plugin.status == PluginStatus.UP_TO_DATE:
                     msg = f"The currently installed version of {plugin.name} ({plugin.installed_version}) is up to date."
                     AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_OK)
+                    return False
 
-                elif plugin.status == PluginStatus.UPDATE_AVAILABLE:
+                if plugin.status == PluginStatus.UPDATE_AVAILABLE:
                     msg = f"New version {plugin.latest_compatible_release.version} is available. Do you want to proceed with the update?"
 
-                    if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDYES:
-                        progress_bar = AllplanUtil.ProgressBar(270, 0, False) # 70 for uninstallation, 100 steps for download, 90 for installation, 10 margin
+                    if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
+                        return False
 
-                        with notify_user(success_msg  = "Plugin updated successfully.",
-                                         error_msg    = "Update failed.",
-                                         progress_bar = progress_bar):
-                            plugin.uninstall(progress_bar)
-                            plugin.install(progress_bar)
+                    progress_bar = AllplanUtil.ProgressBar(270, 0, False) # 70 for uninstallation, 100 steps for download, 90 for installation, 10 margin
 
-                plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
-                return True
+                    with notify_user(success_msg  = "Plugin updated successfully.",
+                                     error_msg    = "Update failed.",
+                                     progress_bar = progress_bar):
+
+                        plugin.uninstall(progress_bar)
+                        plugin.install(progress_bar)
+                        plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
+
+                    return True
+
+                return False
 
             case self.build_ele.INSTALL_ANOTHER_VERSION:
+                combo_box = self.build_ele.get_existing_property("VersionsComboBox")
                 self.control_props_util.set_visible_condition("InstallAnotherVersionRow", "True")
-                plugin.check_releases()
-                versions = "|".join(str(release.version) for release in plugin.releases)
-                self.control_props_util.set_value_list("VersionsComboBox", versions)
+
+                with notify_user(None, f"Not able to get the releases of {plugin.name}."):
+                    plugin.check_releases()
+
+                plugin.fill_versions_combo_box(combo_box, self.control_props_util)
                 return True
 
             case self.build_ele.EXECUTE_INSTALL_ANOTHER_VERSION:
-                version = Version(self.build_ele.VersionsComboBox.value)
+                # From a string like "1.0.0 (3 wks ago, latest)" get only the version number
+                version_str = re.match(r"^[^(]+", self.build_ele.VersionsComboBox.value).group().strip()
+                version = Version(version_str)
 
                 msg = f"You are about to install {plugin.name} version {version}.\nWould you like to proceed?"
                 if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
