@@ -1,0 +1,59 @@
+[
+    {
+        "id": "example-developer",
+        "name": "Example Company 1",
+        "address": {
+            "street": "123 Example Street",
+            "city": "Example City",
+            "zip": "12345",
+            "country": "Example Country"
+        },
+        "homepage": "https://www.example1.com",
+        "support": {
+            "email": "support@example1.com",
+            "languages": [
+                "eng",
+                "spa"
+            ]
+        },
+        "github": "https://github.com/example1/"
+    },
+    {
+        "id": "some-developer",
+        "name": "Example Company 2",
+        "address": {
+            "street": "456 Another St",
+            "city": "Another City",
+            "zip": "67890",
+            "country": "Another Country"
+        },
+        "homepage": "https://www.example2.com",
+        "support": {
+            "email": "support@example2.com",
+            "languages": [
+                "eng",
+                "fra"
+            ]
+        }
+    }
+    ,
+    {
+        "id": "another-developer",
+        "name": "Example Company 3",
+        "address": {
+            "street": "789 New Street",
+            "city": "New City",
+            "zip": "54321",
+            "country": "New Country"
+        },
+        "homepage": "https://www.example3.com",
+        "support": {
+            "email": "support@example3.com",
+            "languages": [
+                "eng",
+                "ger"
+            ]
+        },
+        "github": "https://github.com/example3/"
+    }
+]

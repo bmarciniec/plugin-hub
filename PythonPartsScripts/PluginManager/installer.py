@@ -8,12 +8,12 @@ from xml.etree import ElementTree as ET
 import NemAll_Python_AllplanSettings as AllplanSettings
 import NemAll_Python_Utility as AllplanUtil
 
+from packaging.version import Version
 from pydantic import ValidationError
 
 from . import exceptions
 from .allep import AllepPackage
 from .copy_files import CopyFiles
-from .site_libraries.version import Version
 from .util import Messages, make_step_progress_bar
 
 ALLPLAN_VERSION = Version(AllplanSettings.AllplanVersion.Version())

@@ -1,0 +1,82 @@
+{
+    "plugins": [
+        {
+            "UUID": "a3bb189e-8bf9-3888-9912-ace4e6543002",
+            "pluginName": "Example Plugin 4",
+            "developerName": "example-developer",
+            "version": "1.0.0",
+            "filesCopied": [
+                "Usr\\Local\\Library\\example-developer\\ExampleImage1.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript1.pyp",
+                "Usr\\Local\\Library\\example-developer\\ExampleImage2.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript2.pyp",
+                "Usr\\Local\\Library\\example-developer\\ExampleImage3.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript3.pyp",
+                "Usr\\Local\\Library\\example-developer\\ExampleImage4.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript4.pyp",
+                "Usr\\Local\\Library\\example-developer\\ExampleImage5.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript5.pyp",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon1_128.png",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon1_24.png",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon2_128.png",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon2_24.png",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon3_128.png",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon3_24.png",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon4_128.png",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon4_24.png",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon5_128.png",
+                "Usr\\Local\\PythonPartsActionbar\\example-developer\\ExampleIcon5_24.png",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript1.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript2.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript3.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript4.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript5.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleUtil.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleRequirements.in"
+            ],
+            "createdOn": "2025-03-17",
+            "ACTBFile": "Usr\\Local\\a3bb189e-8bf9-3888-9912-ace4e6543002.actb",
+            "NPDFile": "Usr\\Local\\a3bb189e-8bf9-3888-9912-ace4e6543002.npd"
+        },
+        {
+            "UUID": "e9819b98-5b86-4581-ace9-779923d08c36",
+            "pluginName": "Plugin not registered on GitHub",
+            "developerName": "another-non-existing-developer",
+            "version": "2.3.1",
+            "filesCopied": [
+                "Usr\\Local\\Library\\example-developer\\ExampleImage1.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript1.pyp",
+                "Usr\\Local\\Library\\example-developer\\ExampleImage2.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript2.pyp",
+                "Usr\\Local\\Library\\example-developer\\ExampleImage3.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript3.pyp",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript1.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript2.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript3.py"
+            ],
+            "createdOn": "2025-02-01",
+            "ACTBFile": "",
+            "NPDFile": ""
+        },
+        {
+            "UUID": "c9bf9e57-1685-4c89-bafb-ff5af830be8a",
+            "pluginName": "Example Plugin 2",
+            "developerName": "another-developer",
+            "version": "2.0.4",
+            "filesCopied": [
+                "Usr\\Local\\Library\\example-developer\\ExampleImage1.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript1.pyp",
+                "Usr\\Local\\Library\\example-developer\\ExampleImage2.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript2.pyp",
+                "Usr\\Local\\Library\\example-developer\\ExampleImage3.png",
+                "Usr\\Local\\Library\\example-developer\\ExampleScript3.pyp",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript1.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript2.py",
+                "Usr\\Local\\PythonPartsScripts\\example-developer\\ExampleScript3.py"
+            ],
+            "createdOn": "2025-02-08",
+            "ACTBFile": "",
+            "NPDFile": ""
+        }
+    ]
+}

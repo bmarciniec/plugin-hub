@@ -113,14 +113,14 @@ class PluginManagerScript(BaseScriptObject):
             case self.build_ele.CHECK_FOR_UPDATES:
 
                 with notify_user(None, f"Not able to check the updates for {plugin.name}."):
-                    plugin.check_latest_release()
+                    plugin.check_releases()
 
                 if plugin.status == PluginStatus.UP_TO_DATE:
                     msg = f"The currently installed version of {plugin.name} ({plugin.installed_version}) is up to date."
                     AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_OK)
 
                 elif plugin.status == PluginStatus.UPDATE_AVAILABLE:
-                    msg = f"New version {plugin.latest_compatible_release} is available. Do you want to proceed with the update?"
+                    msg = f"New version {plugin.latest_compatible_release.version} is available. Do you want to proceed with the update?"
 
                     if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDYES:
                         progress_bar = AllplanUtil.ProgressBar(180, 0, False)
