@@ -9,6 +9,11 @@
   <Constants>
     <!-- Actions on the overview page (1001-1500) -->
     <Constant>
+      <Name>CHECK_ALL_FOR_UPDATES</Name>
+      <Value>1002</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
       <Name>SHOW_DETAILS_INSTALLED_PLUGIN</Name>
       <Value>1003</Value>
       <ValueType>Integer</ValueType>
@@ -76,6 +81,33 @@
     <Text>Installed</Text>
     <Visible>CurrentPaletteState == SHOW_OVERVIEW and InstalledPluginNames != ["EMPTY"]</Visible>
     <Parameters>
+      <Parameter>
+        <Name>CheckForUpdatesROw</Name>
+        <Text>Baz</Text>
+        <ValueType>Row</ValueType>
+        <Value>OVERALL</Value>
+        <Parameters>
+          <Parameter>
+            <Name>Dummy</Name>
+            <Text/>
+            <Value/>
+            <ValueType>Text</ValueType>
+            <Orientation>Right</Orientation>
+          </Parameter>
+          <Parameter>
+            <Name>CheckAllForUpdatesButton</Name>
+            <Text>Check all for updates</Text>
+            <EventId>CHECK_ALL_FOR_UPDATES</EventId>
+            <Value>14057</Value>
+            <ValueType>PictureResourceButton</ValueType>
+            <WidthInRow>5</WidthInRow>
+          </Parameter>
+        </Parameters>
+      </Parameter>
+      <Parameter>
+        <Name>Separator</Name>
+        <ValueType>Separator</ValueType>
+      </Parameter>
       <Parameter>
         <Name>InstalledPluginListGroup</Name>
         <ValueType>ListGroup</ValueType>
