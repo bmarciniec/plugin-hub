@@ -7,7 +7,6 @@ import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntEnum, StrEnum
-from math import e
 from pathlib import Path
 from typing import cast
 from uuid import UUID
