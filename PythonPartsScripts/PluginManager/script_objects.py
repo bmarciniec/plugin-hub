@@ -180,7 +180,7 @@ class PluginManagerScript(BaseScriptObject):
                     msg = f"New version {plugin.latest_compatible_release.version} is available. Do you want to proceed with the update?"
 
                     if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDYES:
-                        progress_bar = AllplanUtil.ProgressBar(180, 0, False)
+                        progress_bar = AllplanUtil.ProgressBar(270, 0, False) # 70 for uninstallation, 100 steps for download, 90 for installation, 10 margin
 
                         with notify_user(success_msg  = "Plugin updated successfully.",
                                          error_msg    = "Update failed.",
