@@ -229,13 +229,23 @@ class Plugin:
                 if absolute_path.exists() and absolute_path.is_file():
                     self.installed_files.add(absolute_path)
 
-    def check_releases(self):
+    def check_releases(self, progess_bar: AllplanUtil.ProgressBar | None = None):
         """Get the available releases from GitHub
+
+        Args:
+            progress_bar: Instance of progress_bar. When provided, it will be increased by 10 steps.
         """
         if not self.has_github:
             return False
 
+        if progess_bar is not None:
+            progess_bar.SetTitle(f"Checking {self.name}...")
+
         self._releases.get_from_github(**self.github)
+
+        if progess_bar is not None:
+            progess_bar.MakeStep(19)
+
         self._last_version_check = datetime.now()
 
     @classmethod

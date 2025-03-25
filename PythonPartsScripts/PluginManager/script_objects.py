@@ -16,7 +16,7 @@ from ScriptObjectInteractors.OnCancelFunctionResult import OnCancelFunctionResul
 
 from .allep import AllepPackage
 from .installer import AllepInstaller
-from .plugins import PluginsCollection, PluginStatus
+from .plugins import Plugin, PluginsCollection, PluginStatus
 from .util import notify_user
 
 
@@ -120,6 +120,52 @@ class PluginManagerScript(BaseScriptObject):
 
             case self.build_ele.GO_TO_HOMEPAGE:
                 webbrowser.open(plugin.developer.homepage)
+
+            case self.build_ele.CHECK_ALL_FOR_UPDATES:
+
+                # check for updates; show progress bar
+
+                progress_bar = AllplanUtil.ProgressBar(len(self.plugins) * 10 + 10, 0, False)
+                plugins_to_update = list[Plugin]()
+
+                with notify_user(None, "Not able to check the updates.", progress_bar):
+                    for plugin in self.plugins:
+                        plugin.check_releases(progress_bar)
+
+                        if plugin.status == PluginStatus.UPDATE_AVAILABLE:
+                            plugins_to_update.append(plugin)
+
+                # all plugins are up to date
+
+                if not plugins_to_update:
+                    AllplanUtil.ShowMessageBox("All plugins are up to date.", AllplanUtil.MB_OK)
+                    return False
+
+                # prepare message with plugins that have updates available
+
+                msg = "The following plugins have updates available:\n"
+
+                for plugin in plugins_to_update:
+                    msg += f"\n{plugin.name} ({plugin.installed_version} -> {plugin.latest_compatible_release.version})"
+
+                msg += "\n\nDo you want to proceed with the updates?"
+
+                with notify_user(None, "Not able to update the plugins."):
+                    if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
+                        return False
+
+                progress_bar = AllplanUtil.ProgressBar(len(plugins_to_update) * 260 + 10, 0, False)
+
+                with notify_user(success_msg  = "Plugins updated successfully.",
+                                 error_msg    = "Update failed.",
+                                 progress_bar = progress_bar):
+                    for plugin in plugins_to_update:
+                        progress_bar.SetTitle(f"Updating {plugin.name}...")
+                        plugin.uninstall(progress_bar)
+                        plugin.install(progress_bar)
+                        plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
+
+                return True
 
             case self.build_ele.CHECK_FOR_UPDATES:
 
