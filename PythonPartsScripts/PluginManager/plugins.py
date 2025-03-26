@@ -366,7 +366,7 @@ class Plugin:
         build_ele.DeveloperName.value          = self.developer.name or self.developer.id
         build_ele.DeveloperSupportEmail.value  = self.developer.support.email if self.developer.support else ""
         build_ele.DeveloperAddress.value       = self.developer.address.full_address if self.developer.address else ""
-        build_ele.DeveloperHomepage.value      = self.developer.homepage
+        build_ele.DeveloperHomepage.value      = self.developer.homepage.strip("https://")
 
     def uninstall(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """ Uninstall the plugin.
