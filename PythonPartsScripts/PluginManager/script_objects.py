@@ -122,9 +122,6 @@ class PluginManagerScript(BaseScriptObject):
                 self.plugins.update_plugins_overview_on_palette(self.build_ele)
                 return True
 
-            case self.build_ele.GO_TO_HOMEPAGE:
-                webbrowser.open(plugin.developer.homepage)
-
             case self.build_ele.CHECK_ALL_FOR_UPDATES:
 
                 # check for updates; show progress bar
@@ -236,11 +233,8 @@ class PluginManagerScript(BaseScriptObject):
                     plugin.install(progress_bar, version)
 
                 plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
-                return True
 
-            case self.build_ele.EMAIL_TO_SUPPORT:
-                webbrowser.open(f"mailto:{plugin.developer.support.email}")
-                return False
+                return True
 
             case self.build_ele.UPDATE:
                 msg = f"You are about to update {plugin.name} from {plugin.installed_version} to {plugin.latest_compatible_release}.\nWould you like to proceed?"
@@ -257,6 +251,7 @@ class PluginManagerScript(BaseScriptObject):
                     plugin.install(progress_bar)
 
                 plugin.update_plugin_details_on_palette(self.build_ele, only_status=True)
+
                 return True
 
             case self.build_ele.UNINSTALL:
@@ -276,6 +271,19 @@ class PluginManagerScript(BaseScriptObject):
                 self.build_ele.CurrentPaletteState.value = self.build_ele.SHOW_OVERVIEW
 
                 return True
+
+            case self.build_ele.GO_TO_GITHUB:
+                if plugin.has_github:
+                    webbrowser.open(f"https://github.com/{plugin.github['owner']}/{plugin.github['repo']}/")
+                return False
+
+            case self.build_ele.GO_TO_HOMEPAGE:
+                webbrowser.open(plugin.developer.homepage)
+                return False
+
+            case self.build_ele.EMAIL_TO_SUPPORT:
+                webbrowser.open(f"mailto:{plugin.developer.support.email}")
+                return False
 
         return False
 

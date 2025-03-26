@@ -36,38 +36,43 @@
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>GO_TO_HOMEPAGE</Name>
+      <Name>GO_TO_GITHUB</Name>
       <Value>1502</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>INSTALL</Name>
+      <Name>GO_TO_HOMEPAGE</Name>
       <Value>1503</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>CHECK_FOR_UPDATES</Name>
+      <Name>INSTALL</Name>
       <Value>1504</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>UPDATE</Name>
+      <Name>CHECK_FOR_UPDATES</Name>
       <Value>1505</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>INSTALL_ANOTHER_VERSION</Name>
+      <Name>UPDATE</Name>
       <Value>1506</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>EXECUTE_INSTALL_ANOTHER_VERSION</Name>
+      <Name>INSTALL_ANOTHER_VERSION</Name>
       <Value>1507</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>UNINSTALL</Name>
+      <Name>EXECUTE_INSTALL_ANOTHER_VERSION</Name>
       <Value>1508</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>UNINSTALL</Name>
+      <Value>1509</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <!-- Palette states -->
@@ -280,6 +285,28 @@
             <Value> </Value>
             <ValueType>Text</ValueType>
             <Visible>InstallLocation</Visible>
+          </Parameter>
+          <Parameter>
+            <Name>PluginGithubRepo</Name>
+            <Text>GitHub repository</Text>
+            <ValueType>Row</ValueType>
+            <Visible>PluginGitHubRepoName</Visible>
+            <Parameters>
+              <Parameter>
+                <Name>PluginGitHubRepoName</Name>
+                <Text/>
+                <Value></Value>
+                <ValueType>Text</ValueType>
+              </Parameter>
+              <Parameter>
+                <Name>GoToGitHubButton</Name>
+                <Text>Go to the plugin repository</Text>
+                <EventId>GO_TO_GITHUB</EventId>
+                <Value>8631</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <WidthInRow>5</WidthInRow>
+              </Parameter>
+            </Parameters>
           </Parameter>
           <Parameter>
             <Name>Separator</Name>

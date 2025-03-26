@@ -356,11 +356,12 @@ class Plugin:
         }
 
         # fill the palette with the plugin information
-        build_ele.PluginUUID.value        = str(self.uuid)
-        build_ele.PluginName.value        = self.name
-        build_ele.InstallDate.value       = date_to_str(self.installed_date) if self.installed_date else ""
-        build_ele.InstalledVersion.value  = str(self.installed_version) if self.installed_version else ""
-        build_ele.InstallLocation.value   = location_texts[self.location] if self.location else ""
+        build_ele.PluginUUID.value           = str(self.uuid)
+        build_ele.PluginName.value           = self.name
+        build_ele.InstallDate.value          = date_to_str(self.installed_date) if self.installed_date else ""
+        build_ele.InstalledVersion.value     = str(self.installed_version) if self.installed_version else ""
+        build_ele.InstallLocation.value      = location_texts[self.location] if self.location else ""
+        build_ele.PluginGitHubRepoName.value = f"{self.github['owner']}/{self.github["repo"]}" if self.has_github else ""
 
         # fill the developer information
         build_ele.DeveloperName.value          = self.developer.name or self.developer.id
