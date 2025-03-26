@@ -7,7 +7,7 @@
     <Version>0.1</Version>
   </Script>
   <Constants>
-    <!-- Actions on the overview page (1001-1500) -->
+    <!-- Actions on the overview page of installed plugins (1001-1200) -->
     <Constant>
       <Name>CHECK_ALL_FOR_UPDATES</Name>
       <Value>1002</Value>
@@ -18,9 +18,15 @@
       <Value>1003</Value>
       <ValueType>Integer</ValueType>
     </Constant>
+    <!-- Actions on the overview page of available plugins (1201-1500) -->
     <Constant>
       <Name>SHOW_DETAILS_AVAILABLE_PLUGIN</Name>
-      <Value>1004</Value>
+      <Value>1201</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>INSTALL_AVAILABLE_PLUGIN</Name>
+      <Value>1202</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <!-- Actions on the detail page (1501-2000) -->
@@ -185,6 +191,14 @@
                 <ValueType>Text</ValueType>
                 <FontFaceCode>1</FontFaceCode>
                 <FontStyle>4</FontStyle>
+              </Parameter>
+              <Parameter>
+                <Name>InstallAvailableButton</Name>
+                <Text>Download and install</Text>
+                <EventId>INSTALL_AVAILABLE_PLUGIN</EventId>
+                <Value>8522</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <WidthInRow>5</WidthInRow>
               </Parameter>
               <Parameter>
                 <Name>AvailableDetailsButton</Name>
