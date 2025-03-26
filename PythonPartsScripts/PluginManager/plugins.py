@@ -444,8 +444,9 @@ class Plugin:
         """
         combo_box_entries = []
         selected_entry = ""
+        sorted_releases = sorted(list(self.releases), key = lambda x: x.version, reverse=True)
 
-        for release in self.releases:
+        for release in sorted_releases:
             combo_box_entry = f"{str(release.version)} ({release.published_ago}"
 
             if self.latest_compatible_release is not None and release.version == self.latest_compatible_release.version:
