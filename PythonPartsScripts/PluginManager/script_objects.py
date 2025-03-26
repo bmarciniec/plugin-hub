@@ -215,7 +215,14 @@ class PluginManagerScript(BaseScriptObject):
                 version_str = re.match(r"^[^(]+", self.build_ele.VersionsComboBox.value).group().strip()
                 version = Version(version_str)
 
-                msg = f"You are about to install {plugin.name} version {version}.\nWould you like to proceed?"
+                if isinstance(plugin.installed_version, Version) and version < plugin.installed_version:
+                    msg = f"You are about to downgrade {plugin.name} to version {version}.\n\n"
+                    msg += "IMPORTANT: Downgrading a plugin may cause the PythonParts that are placed in the model"
+                    msg += " to become unmodifiable.\n\nWould you like to proceed?"
+
+                else:
+                    msg = f"You are about to install {plugin.name} version {version}.\nWould you like to proceed?"
+
                 if AllplanUtil.ShowMessageBox(msg, AllplanUtil.MB_YESNO) == AllplanUtil.IDNO:
                     return False
 
