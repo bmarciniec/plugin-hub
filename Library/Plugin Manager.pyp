@@ -347,6 +347,7 @@
                 <EventId>EXECUTE_INSTALL_ANOTHER_VERSION</EventId>
                 <Value>8522</Value>
                 <ValueType>PictureResourceButton</ValueType>
+                <Enable>InstalledVersion not in VersionsComboBox</Enable>
                 <WidthInRow>10</WidthInRow>
               </Parameter>
             </Parameters>
