@@ -225,8 +225,11 @@ def update_valid_folders(target_location: str) -> list[str]:
         list[str]: List of valid folders.
     """
     result = []
+
     if target_location in {"Etc", "Std"}:
-            result.append("Design")
+        result.append("Design")
+
     if target_location == "Std":
-            result.append("Prod")
+        result.append("Prod")
+
     return result

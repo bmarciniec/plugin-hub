@@ -16,7 +16,7 @@ class CopyFiles(AppConfig):
     """Class to move plugin files to repected directories."""
 
     tracked_files: list[str] = []
-    valid_folders: set[str]  = set("Reports", "VisualScripts")
+    valid_folders: set[str]  = {"Reports", "VisualScripts"}
 
     def _get_lib_path(self) -> str:
         """Get path of library folder.
