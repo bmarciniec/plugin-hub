@@ -33,7 +33,7 @@ class CopyFiles(AppConfig):
             str: Full path to STD folder.
         """
 
-        return f"{self.installation.get_path_function()}PythonPartsScripts\\AllepPlugins\\{self.plugin.developer}\\{self.plugin.name}"
+        return f"{self.installation.get_path_function()}PythonPartsScripts\\{self.plugin.UUID}"
 
 
     def split_by_target_location(self, path: str) -> str:
@@ -101,12 +101,6 @@ class CopyFiles(AppConfig):
 
 
         with ZipFile(path_to_allep, "r") as package:
-            directories = self.get_directories(package)
-            for key, value in folders.items():
-                if (val := getattr(self.installation, key, None)):
-
-                    if val and val not in directories:
-                        raise ValueError("Folder specified in the install config does not exist in the plugin")
 
             path = self.installation.get_path_function()
             for x, info in package.NameToInfo.items():
@@ -170,8 +164,8 @@ class CopyFiles(AppConfig):
             "version"       : self.plugin.version,
             "filesCopied"   : self.tracked_files,
             "createdOn"     : str(date.today()),
-            "ACTBFile"      : f"{self.split_by_target_location(self.get_file_location())}.actb" if self.tools and self.task_area  else "",
-            "NPDFile"       : f"{self.split_by_target_location(self.get_file_location())}.npd"  if self.tools else "",
+            "ACTBFile"      : f"{self.split_by_target_location(f"{self.get_file_location()}\\{self.plugin.UUID}")}.actb" if self.tools and self.task_area  else "",
+            "NPDFile"       : f"{self.split_by_target_location(f"{self.get_file_location()}\\{self.plugin.UUID}")}.npd"  if self.tools else "",
         }
 
         if not os.path.exists(file_path):
