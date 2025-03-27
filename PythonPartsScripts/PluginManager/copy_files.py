@@ -10,12 +10,13 @@ from zipfile import ZipFile
 import yaml
 
 from .yaml_models import AppConfig
-
+from .util import update_valid_folders
 
 class CopyFiles(AppConfig):
     """Class to move plugin files to repected directories."""
 
     tracked_files: list[str] = []
+    valid_folders: set[str]  = {"Reports", "VisualScripts"}
 
     def _get_lib_path(self) -> str:
         """Get path of library folder.
@@ -99,6 +100,7 @@ class CopyFiles(AppConfig):
             "actionbar": "PythonPartsActionbar",
         }
 
+        self.valid_folders.update(update_valid_folders(self.installation.target_location))
 
         with ZipFile(path_to_allep, "r") as package:
 
@@ -109,10 +111,10 @@ class CopyFiles(AppConfig):
 
                 attr = x.split("/")[0]
 
-                for key, value in folders.items():
+                for key, _ in folders.items():
                     directory_name = None
-                    if attr == getattr(self.installation, key, None):
-                        directory_name = value
+                    if attr == getattr(self.installation, key, None) or attr in self.valid_folders:
+                        directory_name = attr
                         break
 
                 if not directory_name:
