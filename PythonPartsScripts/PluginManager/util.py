@@ -213,3 +213,20 @@ def remove_directory(path: str):
 
     if os.path.exists(path):
         delete_folder(path)
+
+
+def update_valid_folders(target_location: str) -> list[str]:
+    """Update valid folders based on conditionals.
+
+    Args:
+        target_location: Target location for plugin.
+
+    Returns:
+        list[str]: List of valid folders.
+    """
+    result = []
+    if target_location in {"Etc", "Std"}:
+            result.append("Design")
+    if target_location == "Std":
+            result.append("Prod")
+    return result
