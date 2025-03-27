@@ -1,5 +1,4 @@
 """Module with the script object handling the workflow of the plugin hub"""
-import re
 import sys
 import webbrowser
 
@@ -210,8 +209,9 @@ class PluginManagerScript(BaseScriptObject):
 
             case self.build_ele.EXECUTE_INSTALL_ANOTHER_VERSION:
                 # From a string like "1.0.0 (3 wks ago, latest)" get only the version number
-                version_str = re.match(r"^[^(]+", self.build_ele.VersionsComboBox.value).group().strip()
-                version = Version(version_str)
+                entry = self.build_ele.VersionsComboBox.value
+                # version_str = re.match(r"^[^(]+", ).group().strip()
+                version = Version(entry[:entry.find("(")].strip())
 
                 if isinstance(plugin.installed_version, Version) and version < plugin.installed_version:
                     msg = f"You are about to downgrade {plugin.name} to version {version}.\n\n"
