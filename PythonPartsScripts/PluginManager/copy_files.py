@@ -124,7 +124,7 @@ class CopyFiles(AppConfig):
 
 
                 directory_path = self._make_directory(library)
-                info.filename  = "/".join(info.filename.split("/")[1:])
+                info.filename  = "\\".join(info.filename.split("/")[1:])
 
 
                 self.tracked_files.append(self.split_by_target_location(os.path.join(directory_path, info.filename)))
