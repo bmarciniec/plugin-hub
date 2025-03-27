@@ -17,6 +17,8 @@ class CopyFiles(AppConfig):
 
     tracked_files: list[str] = []
 
+    VALID_FOLDERS = ("Reports", "Design", "VisualScripts")
+
     def _get_lib_path(self) -> str:
         """Get path of library folder.
 
@@ -117,7 +119,7 @@ class CopyFiles(AppConfig):
 
                 for key, value in folders.items():
                     directory_name = None
-                    if attr == getattr(self.installation, key, None):
+                    if attr == getattr(self.installation, key, None) or attr in CopyFiles.VALID_FOLDERS:
                         directory_name = value
                         break
 
