@@ -216,7 +216,7 @@ class PluginManagerScript(BaseScriptObject):
                 if isinstance(plugin.installed_version, Version) and version < plugin.installed_version:
                     msg = f"You are about to downgrade {plugin.name} to version {version}.\n\n"
                     msg += "IMPORTANT: Downgrading a plugin may cause the PythonParts that are placed in the model"
-                    msg += " to become unmodifiable.\n\nWould you like to proceed?"
+                    msg += " with the newer version to become unmodifiable.\n\nWould you like to proceed?"
 
                 else:
                     msg = f"You are about to install {plugin.name} version {version}.\nWould you like to proceed?"
