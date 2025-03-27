@@ -100,7 +100,7 @@ class CopyFiles(AppConfig):
             "actionbar": "PythonPartsActionbar",
         }
 
-        CopyFiles.valid_folders.update(update_valid_folders(self.installation.target_location))
+        self.valid_folders.update(update_valid_folders(self.installation.target_location))
 
         with ZipFile(path_to_allep, "r") as package:
             directories = self.get_directories(package)
@@ -119,7 +119,7 @@ class CopyFiles(AppConfig):
 
                 for key, _ in folders.items():
                     directory_name = None
-                    if attr == getattr(self.installation, key, None) or attr in CopyFiles.valid_folders:
+                    if attr == getattr(self.installation, key, None) or attr in self.valid_folders:
                         directory_name = attr
                         break
 
