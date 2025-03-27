@@ -62,6 +62,27 @@ class Release:
             allep_package = allep_package
         )
 
+    def __str__(self) -> str:
+        """Return string representation of the release.
+
+        The string contains version and the time since the release was published. It looks like "2.0.0 (2 wks ago)".
+        """
+        delta = datetime.now() - self.published_at
+        days = delta.days
+
+        if days < 30:
+            weeks = days // 7
+            published_ago = f"{weeks} wk{'s' if weeks != 1 else ''} ago"
+        elif days < 365:
+            months = days // 30
+            published_ago = f"{months} mo ago"
+        else:
+            years = days // 365
+            published_ago = f"{years} yr{'s' if years != 1 else ''} ago"
+
+        return f"{str(self.version)} ({published_ago})"
+
+
     def __hash__(self) -> int:
         """Return the hash of the release."""
         return hash(self.version)
@@ -169,6 +190,20 @@ class Releases:
 
         for release_data in releases:
             self.add(Release.from_github_data(release_data))
+
+    def get_release_by_version(self, version: version.Version) -> Release | None:
+        """Get a release by version.
+
+        Args:
+            version: The version of the release.
+
+        Returns:
+            The release with the given version or None if not found.
+        """
+        for release in self:
+            if release.version == version:
+                return release
+        return None
 
     @staticmethod
     def _get_latest_from_github(owner: str, repo: str) -> Release:

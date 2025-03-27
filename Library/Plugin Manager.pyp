@@ -7,30 +7,26 @@
     <Version>0.1</Version>
   </Script>
   <Constants>
-    <!-- Actions on the overview page (1001-1500) -->
+    <!-- Actions on the overview page of installed plugins (1001-1200) -->
     <Constant>
-      <Name>INSTALL</Name>
-      <Value>1001</Value>
-      <ValueType>Integer</ValueType>
-    </Constant>
-    <Constant>
-      <Name>CHECK_FOR_UPDATES</Name>
+      <Name>CHECK_ALL_FOR_UPDATES</Name>
       <Value>1002</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>UPDATE</Name>
+      <Name>SHOW_DETAILS_INSTALLED_PLUGIN</Name>
       <Value>1003</Value>
       <ValueType>Integer</ValueType>
     </Constant>
+    <!-- Actions on the overview page of available plugins (1201-1500) -->
     <Constant>
-      <Name>SHOW_DETAILS</Name>
-      <Value>1004</Value>
+      <Name>SHOW_DETAILS_AVAILABLE_PLUGIN</Name>
+      <Value>1201</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>UNINSTALL</Name>
-      <Value>1005</Value>
+      <Name>INSTALL_AVAILABLE_PLUGIN</Name>
+      <Value>1202</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <!-- Actions on the detail page (1501-2000) -->
@@ -40,8 +36,43 @@
       <ValueType>Integer</ValueType>
     </Constant>
     <Constant>
-      <Name>GO_TO_HOMEPAGE</Name>
+      <Name>GO_TO_GITHUB</Name>
       <Value>1502</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>GO_TO_HOMEPAGE</Name>
+      <Value>1503</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>INSTALL</Name>
+      <Value>1504</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>CHECK_FOR_UPDATES</Name>
+      <Value>1505</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>UPDATE</Name>
+      <Value>1506</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>INSTALL_ANOTHER_VERSION</Name>
+      <Value>1507</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>EXECUTE_INSTALL_ANOTHER_VERSION</Name>
+      <Value>1508</Value>
+      <ValueType>Integer</ValueType>
+    </Constant>
+    <Constant>
+      <Name>UNINSTALL</Name>
+      <Value>1509</Value>
       <ValueType>Integer</ValueType>
     </Constant>
     <!-- Palette states -->
@@ -57,22 +88,49 @@
     </Constant>
   </Constants>
   <Page>
-    <Name>PluginOverview</Name>
-    <Text>Plugin overview</Text>
-    <Visible>CurrentPaletteState == SHOW_OVERVIEW</Visible>
+    <Name>InstalledPlugins</Name>
+    <Text>Installed</Text>
+    <Visible>CurrentPaletteState == SHOW_OVERVIEW and InstalledPluginNames != ["EMPTY"]</Visible>
     <Parameters>
       <Parameter>
-        <Name>PluginListGroup</Name>
+        <Name>CheckForUpdatesROw</Name>
+        <Text>Baz</Text>
+        <ValueType>Row</ValueType>
+        <Value>OVERALL</Value>
+        <Parameters>
+          <Parameter>
+            <Name>Dummy</Name>
+            <Text/>
+            <Value/>
+            <ValueType>Text</ValueType>
+            <Orientation>Right</Orientation>
+          </Parameter>
+          <Parameter>
+            <Name>CheckAllForUpdatesButton</Name>
+            <Text>Check all for updates</Text>
+            <EventId>CHECK_ALL_FOR_UPDATES</EventId>
+            <Value>14057</Value>
+            <ValueType>PictureResourceButton</ValueType>
+            <WidthInRow>5</WidthInRow>
+          </Parameter>
+        </Parameters>
+      </Parameter>
+      <Parameter>
+        <Name>Separator</Name>
+        <ValueType>Separator</ValueType>
+      </Parameter>
+      <Parameter>
+        <Name>InstalledPluginListGroup</Name>
         <ValueType>ListGroup</ValueType>
         <Parameters>
           <Parameter>
-            <Name>TitleRow</Name>
+            <Name>InstalledPluginTitleRow</Name>
             <Text>Foo</Text>
             <ValueType>Row</ValueType>
             <Value>OVERALL</Value>
             <Parameters>
               <Parameter>
-                <Name>PluginNames</Name>
+                <Name>InstalledPluginNames</Name>
                 <Text>Foo</Text>
                 <Orientation>Left</Orientation>
                 <Value>[_]</Value>
@@ -81,75 +139,27 @@
                 <FontStyle>4</FontStyle>
               </Parameter>
               <Parameter>
-                <Name>DetailsButton</Name>
+                <Name>InstalledDetailsButton</Name>
                 <Text>Show the plugin details</Text>
-                <EventId>SHOW_DETAILS</EventId>
+                <EventId>SHOW_DETAILS_INSTALLED_PLUGIN</EventId>
                 <Value>AllplanSettings.PictResPalette.eHotinfo</Value>
                 <ValueType>PictureResourceButton</ValueType>
                 <WidthInRow>5</WidthInRow>
               </Parameter>
-              <Parameter>
-                <Name>InstallButton</Name>
-                <Text>Download and install</Text>
-                <EventId>INSTALL</EventId>
-                <Value>8522</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginStates[$list_row] == 0</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
-              <Parameter>
-                <Name>CheckForUpdatesButton</Name>
-                <Text>Check for updates</Text>
-                <EventId>CHECK_FOR_UPDATES</EventId>
-                <Value>14057</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginHasGitHubRepo[$list_row] and PluginStates[$list_row] == 1</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
-              <Parameter>
-                <Name>UpdateButton</Name>
-                <Text>Update the plugin</Text>
-                <EventId>UPDATE</EventId>
-                <Value>8519</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginStates[$list_row] == 2</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
-              <Parameter>
-                <Name>UpToDateButton</Name>
-                <Text>Plugin is up to date</Text>
-                <EventId>0</EventId>
-                <Value>11433</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Enable>False</Enable>
-                <Visible>PluginStates[$list_row] == 3</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
-              <Parameter>
-                <Name>UninstallButton</Name>
-                <Text>Uninstall this plugin</Text>
-                <EventId>UNINSTALL</EventId>
-                <Value>10051</Value>
-                <ValueType>PictureResourceButton</ValueType>
-                <Visible>PluginStates[$list_row] != 0</Visible>
-                <WidthInRow>5</WidthInRow>
-              </Parameter>
             </Parameters>
-
           </Parameter>
-
           <Parameter>
-            <Name>DescriptionRow</Name>
+            <Name>InstalledPluginDescriptionRow</Name>
             <Text>Bar</Text>
             <ValueType>Row</ValueType>
             <Value>OVERALL</Value>
             <Parameters>
               <Parameter>
-                <Name>PluginDescriptions</Name>
+                <Name>InstalledPluginDescriptions</Name>
                 <Text />
                 <Value>[_]</Value>
                 <ValueType>Text</ValueType>
-                <Visible>PluginDescriptions[$list_row] != ""</Visible>
+                <Visible>InstalledPluginDescriptions[$list_row] != ""</Visible>
                 <FontStyle>1</FontStyle>
               </Parameter>
             </Parameters>
@@ -157,6 +167,74 @@
           <Parameter>
             <Name>Separator</Name>
             <ValueType>Separator</ValueType>
+            <Visible>$list_row != len(InstalledPluginNames) - 1 </Visible>
+          </Parameter>
+        </Parameters>
+      </Parameter>
+    </Parameters>
+  </Page>
+  <Page>
+    <Name>AvailablePlugins</Name>
+    <Text>Available</Text>
+    <Visible>CurrentPaletteState == SHOW_OVERVIEW and AvailablePluginNames != ["EMPTY"]</Visible>
+    <Parameters>
+      <Parameter>
+        <Name>AvailablePluginListGroup</Name>
+        <ValueType>ListGroup</ValueType>
+        <Parameters>
+          <Parameter>
+            <Name>AvailablePluginTitleRow</Name>
+            <Text>Foo</Text>
+            <ValueType>Row</ValueType>
+            <Value>OVERALL</Value>
+            <Parameters>
+              <Parameter>
+                <Name>AvailablePluginNames</Name>
+                <Text>Foo</Text>
+                <Orientation>Left</Orientation>
+                <Value>[_]</Value>
+                <ValueType>Text</ValueType>
+                <FontFaceCode>1</FontFaceCode>
+                <FontStyle>4</FontStyle>
+              </Parameter>
+              <Parameter>
+                <Name>InstallAvailableButton</Name>
+                <Text>Download and install</Text>
+                <EventId>INSTALL_AVAILABLE_PLUGIN</EventId>
+                <Value>8522</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <WidthInRow>5</WidthInRow>
+              </Parameter>
+              <Parameter>
+                <Name>AvailableDetailsButton</Name>
+                <Text>Show the plugin details</Text>
+                <EventId>SHOW_DETAILS_AVAILABLE_PLUGIN</EventId>
+                <Value>AllplanSettings.PictResPalette.eHotinfo</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <WidthInRow>5</WidthInRow>
+              </Parameter>
+            </Parameters>
+          </Parameter>
+          <Parameter>
+            <Name>AvailablePluginDescriptionRow</Name>
+            <Text>Bar</Text>
+            <ValueType>Row</ValueType>
+            <Value>OVERALL</Value>
+            <Parameters>
+              <Parameter>
+                <Name>AvailablePluginDescriptions</Name>
+                <Text />
+                <Value>[_]</Value>
+                <ValueType>Text</ValueType>
+                <Visible>AvailablePluginDescriptions[$list_row] != ""</Visible>
+                <FontStyle>1</FontStyle>
+              </Parameter>
+            </Parameters>
+          </Parameter>
+          <Parameter>
+            <Name>Separator</Name>
+            <ValueType>Separator</ValueType>
+            <Visible>$list_row != len(AvailablePluginNames) - 1 </Visible>
           </Parameter>
         </Parameters>
       </Parameter>
@@ -177,8 +255,8 @@
           <Parameter>
             <Name>PluginUUID</Name>
             <Text>UUID</Text>
-            <Value> </Value>
-            <ValueType>Text</ValueType>
+            <Value/>
+            <ValueType>String</ValueType>
             <Visible>False</Visible>
           </Parameter>
           <Parameter>
@@ -207,6 +285,113 @@
             <Value> </Value>
             <ValueType>Text</ValueType>
             <Visible>InstallLocation</Visible>
+          </Parameter>
+          <Parameter>
+            <Name>PluginGithubRepo</Name>
+            <Text>GitHub repository</Text>
+            <ValueType>Row</ValueType>
+            <Visible>PluginGitHubRepoName</Visible>
+            <Parameters>
+              <Parameter>
+                <Name>PluginGitHubRepoName</Name>
+                <Text/>
+                <Value></Value>
+                <ValueType>Text</ValueType>
+              </Parameter>
+              <Parameter>
+                <Name>GoToGitHubButton</Name>
+                <Text>Go to the plugin repository</Text>
+                <EventId>GO_TO_GITHUB</EventId>
+                <Value>8631</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <WidthInRow>5</WidthInRow>
+              </Parameter>
+            </Parameters>
+          </Parameter>
+          <Parameter>
+            <Name>Separator</Name>
+            <Text/>
+            <ValueType>Separator</ValueType>
+          </Parameter>
+          <Parameter>
+            <Name>ActionsRow</Name>
+            <Text> </Text>
+            <ValueType>Row</ValueType>
+            <Parameters>
+              <Parameter>
+                <Name>InstallButton</Name>
+                <Text>Download and install</Text>
+                <EventId>INSTALL</EventId>
+                <Value>8522</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus == 0</Visible>
+              </Parameter>
+              <Parameter>
+                <Name>CheckForUpdatesButton</Name>
+                <Text>Check for updates</Text>
+                <EventId>CHECK_FOR_UPDATES</EventId>
+                <Value>14057</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus == 1 and PluginHasGitHub</Visible>
+              </Parameter>
+              <Parameter>
+                <Name>UpdateButton</Name>
+                <Text>Update the plugin</Text>
+                <EventId>UPDATE</EventId>
+                <Value>8519</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus == 2 and PluginHasGitHub</Visible>
+              </Parameter>
+              <Parameter>
+                <Name>UpToDateButton</Name>
+                <Text>Plugin is up to date</Text>
+                <EventId>0</EventId>
+                <Value>11433</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus == 3 and PluginHasGitHub</Visible>
+                <Enable>False</Enable>
+              </Parameter>
+              <Parameter>
+                <Name>InstallAnotherVersionButton</Name>
+                <Text>Install another version</Text>
+                <EventId>INSTALL_ANOTHER_VERSION</EventId>
+                <Value>16975</Value>  <!--11169;14065-->
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus != 0 and PluginHasGitHub</Visible>
+              </Parameter>
+              <Parameter>
+                <Name>UninstallButton</Name>
+                <Text>Uninstall this plugin</Text>
+                <EventId>UNINSTALL</EventId>
+                <Value>10051</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Visible>PluginStatus != 0</Visible>
+              </Parameter>
+            </Parameters>
+          </Parameter>
+          <Parameter>
+            <Name>InstallAnotherVersionRow</Name>
+            <Text>Select version </Text>
+            <ValueType>Row</ValueType>
+            <Visible>False</Visible>
+            <Parameters>
+              <Parameter>
+                <Name>VersionsComboBox</Name>
+                <Text>VersionsComboBox</Text>
+                <Value/>
+                <ValueList/>
+                <ValueType>StringComboBox</ValueType>
+              </Parameter>
+              <Parameter>
+                <Name>ExecuteInstallAnotherVersionButton</Name>
+                <Text>Install</Text>
+                <EventId>EXECUTE_INSTALL_ANOTHER_VERSION</EventId>
+                <Value>8522</Value>
+                <ValueType>PictureResourceButton</ValueType>
+                <Enable>InstalledVersion not in VersionsComboBox</Enable>
+                <WidthInRow>10</WidthInRow>
+              </Parameter>
+            </Parameters>
           </Parameter>
         </Parameters>
       </Parameter>
@@ -283,15 +468,15 @@
     <Text></Text>
     <Parameters>
       <Parameter>
-        <Name>PluginStates</Name>
+        <Name>PluginStatus</Name>
         <Text />
-        <Value>[_]</Value>
+        <Value>0</Value>
         <ValueType>Integer</ValueType>
       </Parameter>
       <Parameter>
-        <Name>PluginHasGitHubRepo</Name>
+        <Name>PluginHasGitHub</Name>
         <Text />
-        <Value>[_]</Value>
+        <Value>False</Value>
         <ValueType>CheckBox</ValueType>
       </Parameter>
       <Parameter>

@@ -15,9 +15,11 @@ import NemAll_Python_Utility as AllplanUtil
 import requests
 
 from BuildingElement import BuildingElement
+from ControlPropertiesUtil import ControlPropertiesUtil
 from FileNameService import FileNameService
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
+from ParameterProperty import ParameterProperty
 
 from . import config
 from .developers import Developer, DeveloperIndex
@@ -101,21 +103,26 @@ class PluginsCollection:
             for plugin_data in manifest["plugins"]:
                 self.append(Plugin.from_manifest_data(location, plugin_data))
 
-    def update_building_element(self, build_ele: BuildingElement, only_status: bool = False):
+    def update_plugins_overview_on_palette(self, build_ele: BuildingElement):
         """Populate the building element with the plugin information.
 
         Args:
             build_ele (BuildingElement): Building element to populate.
             only_status (bool): If True, only the status of the plugins is updated, otherwise all the plugin information is updated.
         """
-        build_ele.PluginStates.value        = [plgn.status for plgn in self]
 
-        if only_status:
-            return
+        # fill the palette with installed plugins
+        build_ele.InstalledPluginNames.value         = [plgn.name for plgn in self if plgn.status != PluginStatus.NOT_INSTALLED]
+        build_ele.InstalledPluginDescriptions.value  = [plgn.description for plgn in self if plgn.status != PluginStatus.NOT_INSTALLED]
 
-        build_ele.PluginNames.value         = [plgn.name for plgn in self]
-        build_ele.PluginDescriptions.value  = [plgn.description for plgn in self]
-        build_ele.PluginHasGitHubRepo.value = [plgn.has_github for plgn in self]
+        # fill the palette with not installed plugins
+        build_ele.AvailablePluginNames.value         = [plgn.name for plgn in self if plgn.status == PluginStatus.NOT_INSTALLED]
+        build_ele.AvailablePluginDescriptions.value  = [plgn.description for plgn in self if plgn.status == PluginStatus.NOT_INSTALLED]
+
+        # palette does not show up if one of the lists is empty
+        for prop_name in ("InstalledPluginNames", "InstalledPluginDescriptions", "AvailablePluginNames", "AvailablePluginDescriptions"):
+            build_ele.get_existing_property(prop_name).value = build_ele.get_existing_property(prop_name).value or ["EMPTY"]
+
 
     def clean_up(self):
         """Remove the plugins from the collection, that are not installed and don't have a GitHub repository."""
@@ -201,7 +208,7 @@ class Plugin:
 
     # Internal attributes
     _last_version_check : datetime | None     = field(init=False, default=None, repr=False, compare=False)
-    _releases           : Releases            = field(init=False, default=Releases())
+    _releases           : Releases            = field(init=False, default_factory=Releases)
 
     def __post_init__(self):
         """Post initialization of the Plugin object."""
@@ -224,13 +231,23 @@ class Plugin:
                 if absolute_path.exists() and absolute_path.is_file():
                     self.installed_files.add(absolute_path)
 
-    def check_releases(self):
+    def check_releases(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """Get the available releases from GitHub
+
+        Args:
+            progress_bar: Instance of progress_bar. When provided, it will be increased by 10 steps.
         """
         if not self.has_github:
-            return False
+            return
+
+        if progress_bar is not None:
+            progress_bar.SetTitle(f"Checking {self.name}...")
 
         self._releases.get_from_github(**self.github)
+
+        if progress_bar is not None:
+            progress_bar.MakeStep(19)
+
         self._last_version_check = datetime.now()
 
     @classmethod
@@ -274,7 +291,7 @@ class Plugin:
             location          = location
         )
 
-    def install(self, progress_bar: AllplanUtil.ProgressBar | None = None):
+    def install(self, progress_bar: AllplanUtil.ProgressBar | None = None, version: Version | None = None):
         """Install the plugin from GitHub
 
         Args:
@@ -287,13 +304,18 @@ class Plugin:
         if not self._releases:
             self._releases.get_from_github(**self.github)
 
-        if self.latest_compatible_release is None:
+        if version is not None:
+            release_to_install = self.releases.get_release_by_version(version)
+        else:
+            release_to_install = self.latest_compatible_release
+
+        if release_to_install is None:
             raise RuntimeError("Cannot install this plugin, as no release compatible with this Allplan version was found")
 
-        installer = AllepInstaller(self.latest_compatible_release.allep_package)
+        installer = AllepInstaller(release_to_install.allep_package)
         installer.download_and_install_package(progress_bar)
 
-        self.installed_version = self.latest_compatible_release.version
+        self.installed_version = release_to_install.version
         self.installed_date    = datetime.now()
 
     def fetch(self, another_plugin: Plugin):
@@ -313,13 +335,19 @@ class Plugin:
             if getattr(another_plugin, fld):
                 setattr(self, fld, getattr(another_plugin, fld))
 
-    def show_details_on_palette(self, build_ele: BuildingElement):
+    def update_plugin_details_on_palette(self, build_ele: BuildingElement, only_status: bool = False):
         """Fill the palette with the plugin information.
 
         Args:
             build_ele: Building element to populate.
             control_props_util: Control properties utility to alter the visibility of the palette elements.
         """
+        build_ele.PluginStatus.value = self.status
+        build_ele.PluginHasGitHub.value = self.has_github
+
+        if only_status:
+            return
+
         _, global_str_table = build_ele.get_string_tables()
         location_texts = {
             "std": global_str_table.get_string("e_OFFICE", "Office"),
@@ -328,17 +356,18 @@ class Plugin:
         }
 
         # fill the palette with the plugin information
-        build_ele.PluginUUID.value        = str(self.uuid)
-        build_ele.PluginName.value        = self.name
-        build_ele.InstallDate.value       = date_to_str(self.installed_date) if self.installed_date else ""
-        build_ele.InstalledVersion.value  = str(self.installed_version) if self.installed_version else ""
-        build_ele.InstallLocation.value   = location_texts[self.location] if self.location else ""
+        build_ele.PluginUUID.value           = str(self.uuid)
+        build_ele.PluginName.value           = self.name
+        build_ele.InstallDate.value          = date_to_str(self.installed_date) if self.installed_date else ""
+        build_ele.InstalledVersion.value     = str(self.installed_version or "")
+        build_ele.InstallLocation.value      = location_texts.get(str(self.location), "")
+        build_ele.PluginGitHubRepoName.value = f"{self.github['owner']}/{self.github["repo"]}" if self.has_github else ""
 
         # fill the developer information
         build_ele.DeveloperName.value          = self.developer.name or self.developer.id
-        build_ele.DeveloperSupportEmail.value  = self.developer.support.email if self.developer.support else ""
-        build_ele.DeveloperAddress.value       = self.developer.address.full_address if self.developer.address else ""
-        build_ele.DeveloperHomepage.value      = self.developer.homepage
+        build_ele.DeveloperSupportEmail.value  = getattr(self.developer.support, "email", "")
+        build_ele.DeveloperAddress.value       = getattr(self.developer.address, "full_address", "")
+        build_ele.DeveloperHomepage.value      = self.developer.homepage.strip("https://").strip("http://")
 
     def uninstall(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """ Uninstall the plugin.
@@ -403,8 +432,34 @@ class Plugin:
 
         self.installed_date = None
         self.installed_version = None
+        self.location = None
 
         make_step_progress_bar(10, "Completed", progress_bar)
+
+    def fill_versions_combo_box(self, param: ParameterProperty, control_props_util: ControlPropertiesUtil):
+        """Fill the combo box with the available versions of the plugin.
+
+        Args:
+            param: Parameter property representing the combobox to fill.
+            control_props_util: Control properties utility to alter the combobox entries.
+        """
+        combo_box_entries = []
+        selected_entry = "Select version"
+        sorted_releases = sorted(list(self.releases), key = lambda x: x.version, reverse=True)
+
+        for release in sorted_releases:
+            combo_box_entry = str(release)
+
+            if self.latest_compatible_release is not None and release.version == self.latest_compatible_release.version:
+                combo_box_entry = combo_box_entry[:-1] + ", latest)"
+
+            if self.installed_version and release.version == self.installed_version:
+                selected_entry = combo_box_entry
+
+            combo_box_entries.append(combo_box_entry)
+
+        control_props_util.set_value_list(param.name, "|".join(combo_box_entries))
+        param.value = selected_entry
 
     @property
     def has_github(self) -> bool:
