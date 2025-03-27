@@ -119,7 +119,7 @@ class CopyFiles(AppConfig):
 
                 for key, _ in folders.items():
                     directory_name = None
-                    if attr == getattr(self.installation, key, None) or attr in CopyFiles.VALID_FOLDERS:
+                    if attr == getattr(self.installation, key, None) or attr in CopyFiles.valid_folders:
                         directory_name = attr
                         break
 
