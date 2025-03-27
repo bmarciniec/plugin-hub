@@ -359,15 +359,15 @@ class Plugin:
         build_ele.PluginUUID.value           = str(self.uuid)
         build_ele.PluginName.value           = self.name
         build_ele.InstallDate.value          = date_to_str(self.installed_date) if self.installed_date else ""
-        build_ele.InstalledVersion.value     = str(self.installed_version) if self.installed_version else ""
-        build_ele.InstallLocation.value      = location_texts[self.location] if self.location else ""
+        build_ele.InstalledVersion.value     = str(self.installed_version or "")
+        build_ele.InstallLocation.value      = location_texts.get(str(self.location), "")
         build_ele.PluginGitHubRepoName.value = f"{self.github['owner']}/{self.github["repo"]}" if self.has_github else ""
 
         # fill the developer information
         build_ele.DeveloperName.value          = self.developer.name or self.developer.id
-        build_ele.DeveloperSupportEmail.value  = self.developer.support.email if self.developer.support else ""
-        build_ele.DeveloperAddress.value       = self.developer.address.full_address if self.developer.address else ""
-        build_ele.DeveloperHomepage.value      = self.developer.homepage.strip("https://")
+        build_ele.DeveloperSupportEmail.value  = getattr(self.developer.support, "email", "")
+        build_ele.DeveloperAddress.value       = getattr(self.developer.address, "full_address", "")
+        build_ele.DeveloperHomepage.value      = self.developer.homepage.strip("https://").strip("http://")
 
     def uninstall(self, progress_bar: AllplanUtil.ProgressBar | None = None):
         """ Uninstall the plugin.
@@ -444,16 +444,14 @@ class Plugin:
             control_props_util: Control properties utility to alter the combobox entries.
         """
         combo_box_entries = []
-        selected_entry = ""
+        selected_entry = "Select version"
         sorted_releases = sorted(list(self.releases), key = lambda x: x.version, reverse=True)
 
         for release in sorted_releases:
-            combo_box_entry = f"{str(release.version)} ({release.published_ago}"
+            combo_box_entry = str(release)
 
             if self.latest_compatible_release is not None and release.version == self.latest_compatible_release.version:
-                combo_box_entry += ", latest"
-
-            combo_box_entry += ")"
+                combo_box_entry = combo_box_entry[:-1] + ", latest)"
 
             if self.installed_version and release.version == self.installed_version:
                 selected_entry = combo_box_entry
