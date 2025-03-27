@@ -29,7 +29,7 @@ INVALID_CHARS    = ("<", ">", ":", '"', "/", "\\", "|", "?")
 
 
 def sanitize_strings(value: str) -> str:
-    """ Sanitize strings to conform to winodws file naming conventions.
+    """ Sanitize strings to conform to windows file naming conventions.
 
     Args:
         value: String value.
@@ -85,9 +85,9 @@ class Plugins(Base):
         self.original_developer_name = kwargs["developer"]
 
 
-    @validator("name", "developer")
-    def validate_strings(cls, value: str):
-        return sanitize_strings(value)
+    # @validator("name", "developer")
+    # def validate_strings(cls, value: str):
+    #     return sanitize_strings(value)
 
     def get_folder_name(self) -> str:
         """ Return folder name
