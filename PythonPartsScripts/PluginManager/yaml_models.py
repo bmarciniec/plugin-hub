@@ -413,7 +413,7 @@ class AppConfig(Base):
         # Add NameID in group
         npd_hash                = AllPlanUtility.GetPluginNameHash(f"{self.installation.get_update_target_location()}\\PythonPartsActionbar\\{self.plugin.UUID}.npd")
         group                   = task_tag.find("Group")
-        group.find("NameID").text = f"PLUGIN_||10||{self.plugin.name}#{npd_hash}"
+        group.find("NameID").text = f"PLUGIN_||10||{self.plugin.UUID}#{npd_hash}"
 
         # Create FlyOuts
         container = group.find("Container")
@@ -432,7 +432,7 @@ class AppConfig(Base):
                 flyout     = ET.SubElement(container,"FlyOut",)
                 event      = ET.SubElement(flyout, "Event",)
                 if item in self.tools_by_id:
-                    event.text = f"PLUGIN_||{self.tools_by_id[item].event_id}||{self.plugin.name}#{npd_hash} - {self.tools_by_id[item].display_name['en']}"
+                    event.text = f"PLUGIN_||{self.tools_by_id[item].event_id}||{self.plugin.UUID}#{npd_hash} - {self.tools_by_id[item].display_name['en']}"
         return node
 
     def write_file(self):
