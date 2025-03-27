@@ -210,7 +210,6 @@ class PluginManagerScript(BaseScriptObject):
             case self.build_ele.EXECUTE_INSTALL_ANOTHER_VERSION:
                 # From a string like "1.0.0 (3 wks ago, latest)" get only the version number
                 entry = self.build_ele.VersionsComboBox.value
-                # version_str = re.match(r"^[^(]+", ).group().strip()
                 version = Version(entry[:entry.find("(")].strip())
 
                 if isinstance(plugin.installed_version, Version) and version < plugin.installed_version:
