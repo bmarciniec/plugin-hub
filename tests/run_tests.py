@@ -6,7 +6,6 @@ import unittest
 import winreg
 
 from pathlib import Path
-from pdb import run
 from unittest.mock import patch
 
 
